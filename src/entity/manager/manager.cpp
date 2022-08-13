@@ -21,8 +21,10 @@ void Manager::updateToAwakeByHostname(std::string hostname)
     {
         if (it->hostname == hostname)
         {
-            it->setMemberAsAwake();
-            this->postMembersUpdate();
+            if (!it->isAwake()) {
+                it->setMemberAsAwake();
+                this->postMembersUpdate();
+            }
             break;
         }
     }
@@ -37,8 +39,10 @@ void Manager::updateToAwakeByIPv4(std::string ipv4)
     {
         if (it->ipv4 == ipv4)
         {
-            it->setMemberAsAwake();
-            this->postMembersUpdate();
+            if (!it->isAwake()) {
+                it->setMemberAsAwake();
+                this->postMembersUpdate();
+            }
             break;
         }
     }
@@ -53,8 +57,10 @@ void Manager::updateToAwakeByIPv6(std::string ipv6)
     {
         if (it->ipv6 == ipv6)
         {
-            it->setMemberAsAwake();
-            this->postMembersUpdate();
+            if (!it->isAwake()) {
+                it->setMemberAsAwake();
+                this->postMembersUpdate();
+            }
             break;
         }
     }
@@ -69,8 +75,10 @@ void Manager::updateToSleepingByHostname(std::string hostname)
     {
         if (it->hostname == hostname)
         {
-            it->setMemberAsSleeping();
-            this->postMembersUpdate();
+            if (it->isAwake()) {
+                it->setMemberAsSleeping();
+                this->postMembersUpdate();
+            }
             break;
         }
     }
@@ -85,8 +93,10 @@ void Manager::updateToSleepingByIPv4(std::string ipv4)
     {
         if (it->ipv4 == ipv4)
         {
-            it->setMemberAsSleeping();
-            this->postMembersUpdate();
+            if (it->isAwake()) {
+                it->setMemberAsSleeping();
+                this->postMembersUpdate();
+            }
             break;
         }
     }
@@ -101,8 +111,10 @@ void Manager::updateToSleepingByIPv6(std::string ipv6)
     {
         if (it->ipv6 == ipv6)
         {
-            it->setMemberAsSleeping();
-            this->postMembersUpdate();
+            if (it->isAwake()) {
+                it->setMemberAsSleeping();
+                this->postMembersUpdate();
+            }
             break;
         }
     }
@@ -152,6 +164,19 @@ void Manager::addMembersByMessages(std::list<std::string> messages)
     this->postMembersUpdate();
 
     pthread_mutex_unlock(&(this->changeMembersLock));
+}
+
+Member Manager::getByAddress(std::string address)
+{
+    try {
+        return this->getByHostname(address);
+    } catch (ItemNotFoundException& e) {        
+        try {
+            return this->getByIPv4(address);
+        } catch (ItemNotFoundException& e) {
+            return this->getByIPv6(address);
+        }
+    }
 }
 
 Member Manager::getByIPv4(std::string ipv4) 

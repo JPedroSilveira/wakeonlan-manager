@@ -13,6 +13,11 @@ Member::Member()
     this->isManager = false;
 }
 
+bool Member::isAwake()
+{
+    return this->status == 1;
+}
+
 void Member::setMemberAsAwake()
 {
     this->status = 1;

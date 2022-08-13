@@ -47,6 +47,7 @@ public:
     void updateToSleepingByIPv6(std::string ipv6);
     void updateToSleepingByHostname(std::string hostname);
 
+    Member getByAddress(std::string address);
     Member getByIPv4(std::string ipv4);
     Member getByIPv6(std::string ipv6);
     Member getByHostname(std::string hostname);

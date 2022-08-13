@@ -32,6 +32,7 @@ public:
     bool isManager;
     Member();
     int getStatus();
+    bool isAwake();
     void setMemberAsAwake();
     void setMemberAsSleeping();
     void setIsManager(std::vector<std::string> args);

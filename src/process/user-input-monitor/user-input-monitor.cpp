@@ -1,17 +1,5 @@
 #include "user-input-monitor.h"
 
-Member getMember(State* state, std::string address) {
-    try {
-        return state->getManager()->getByHostname(address);
-    } catch (ItemNotFoundException& e) {        
-        try {
-            return state->getManager()->getByIPv4(address);
-        } catch (ItemNotFoundException& e) {
-            return state->getManager()->getByIPv6(address);
-        }
-    }
-}
-
 void UserInputMonitorProcess(State* state)
 {
     while (true)
@@ -27,7 +15,7 @@ void UserInputMonitorProcess(State* state)
             std::string address = command.substr(7, command.length());
 	        printLine("Waking up " + address);
             try {
-                Member member = getMember(state, address);
+                Member member = state->getManager()->getByAddress(address);
                 wakeUp(member.mac);
             } catch (ItemNotFoundException& e) {         
                 printLine("Address not found!");
