@@ -9,6 +9,8 @@ const int BROADCAST_TIMEOUT_IN_SEC = 10;
 void sendBroadcastPacket(State* state)
 {
     while(true) {
+        throwExceptionIfNotAlive(state);
+
         char buffer[BUFFER_SIZE];
         int n{0};
         socklen_t clilen;
@@ -27,7 +29,7 @@ void sendBroadcastPacket(State* state)
         int ret = setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
         if (ret)
         {
-            printf("Error: Could not open set socket to broadcast mode");
+            printLine("Error: Could not open set socket to broadcast mode");
             close(sockfd);
             return;
         }
@@ -39,7 +41,7 @@ void sendBroadcastPacket(State* state)
         ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
         if (ret)
         {
-            printf("Error: Could not set socket timeout");
+            printLine("Error: Could not set socket timeout");
             close(sockfd);
             return;
         }
@@ -82,11 +84,21 @@ void sendBroadcastPacket(State* state)
 
         close(sockfd);
 
-        for (std::string message : memberMessages) {
-            state->membersManager.addMember(message);
-        }
+        state->getMembersManager()->addMembersByMessages(memberMessages);
+   
+        std::this_thread::sleep_for(std::chrono::seconds(BROADCAST_SLEEP_TIME_IN_SEC));
+    }
+}
 
-        printMembersTable(state->membersManager);
+void sendBroadcastPacketMock(State* state) {
+    while(true) 
+    {
+        throwExceptionIfNotAlive(state);
+
+        std::list<std::string> memberMessages {};
+
+        memberMessages.push_back("1,192.168.0.50,e3:23:12:12:02:ee,jpedrohost,aa:bb:cc:dd:ee:ff,192.168.0.255,0");
+        state->getMembersManager()->addMembersByMessages(memberMessages);
    
         std::this_thread::sleep_for(std::chrono::seconds(BROADCAST_SLEEP_TIME_IN_SEC));
     }
@@ -120,6 +132,8 @@ void receiveBroadcastPacket(State* state)
 
     while (true)
     {
+        throwExceptionIfNotAlive(state);
+        
         n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&cli_addr, &clilen);
         if (n < 0)
         {

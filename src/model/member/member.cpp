@@ -77,14 +77,40 @@ int Member::getStatus()
 
 void Member::setIsManager(std::vector<std::string> args)
 {
+    bool isManager = false;
+
     for (std::string arg : args)
     {
         if (arg == "manager")
         {
-            this->isManager = true;
-            return;
+            isManager = true;
+            break;
         }
     }
-    this->isManager = false;
+
+    if (isManager) 
+    {
+        printLine("Manager Machine");
+    }
+    else
+    {
+        printLine("Client Machine");
+    }
+    this->isManager = isManager;
 }
 
+std::string Member::toTableLine() 
+{
+    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->getStatus()) + "\n";
+}
+
+void printMembersTable(std::list<Member> members) {
+    std::string header = "Hostname \t | Endereço MAC \t | Endereço IPv4 \t | Status \n";
+    std::list<std::string> lines {};
+    for (Member member : members)
+    {
+        lines.push_back(member.toTableLine());
+    }
+
+    printTable(header, lines);
+}

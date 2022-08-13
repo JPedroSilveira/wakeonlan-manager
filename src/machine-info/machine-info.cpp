@@ -1,4 +1,4 @@
-#include "machine-manager.h"
+#include "machine-info.h"
 
 const int MAX_HOSTNAME_LENGTH = 255;
 

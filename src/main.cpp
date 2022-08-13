@@ -4,19 +4,17 @@
 #include <future>
 #include <vector>
 
-#include "./output/output.h"
+#include "./utils/print-utils/print-utils.h"
 #include "./model/member/member.h"
-#include "./machine-manager/machine-manager.h"
+#include "./machine-info/machine-info.h"
 #include "./model/state/state.h"
 #include "./model/process/process.h"
-#include "./input/input.h"
-#include "./discover/discover.h"
-#include "./monitor/monitor.h"
-#include "./listener/listener.h"
+#include "./process/user-input-monitor/user-input-monitor.h"
+#include "./process/discover/discover.h"
+#include "./process/monitor/monitor.h"
+#include "./process/listener/listener.h"
 
-MembersManager membersManager = MembersManager{};
-Member self = getMachineInfo();
-State state = State(self, membersManager);
+State state = State();
 
 int main(int argc, char *argv[])
 {
@@ -24,8 +22,8 @@ int main(int argc, char *argv[])
 
     state.self.setIsManager(args);
 
-    Process inputProcess{InputProcess};
-    inputProcess.start(&state);
+    Process userInputMonitorProcess{UserInputMonitorProcess};
+    userInputMonitorProcess.start(&state);
 
     Process monitorProcess{MonitorProcess};
     monitorProcess.start(&state);
@@ -40,9 +38,12 @@ int main(int argc, char *argv[])
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     } while (
-        inputProcess.getStatus() != std::future_status::ready &&
+        userInputMonitorProcess.getStatus() != std::future_status::ready &&
         discoveryProcess.getStatus() != std::future_status::ready && 
-        monitorProcess.getStatus() != std::future_status::ready);
+        monitorProcess.getStatus() != std::future_status::ready &&
+        listenerProcess.getStatus() != std::future_status::ready);
+
+    state.kill();
 
     printLine("Program ended!");
 

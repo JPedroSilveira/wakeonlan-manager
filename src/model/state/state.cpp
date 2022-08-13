@@ -1,7 +1,23 @@
 #include "state.h"
 
-State::State(Member self, MembersManager membersManager)
+State::State()
 {
-    this->self = self;
-    this->membersManager = membersManager;
+    this->self = getMachineInfo();
+    this->membersManager = MembersManager{};
+    this->alive = true;
+}
+
+MembersManager* State::getMembersManager() 
+{
+    return &(this->membersManager);
+}
+
+bool State::isAlive()
+{
+    return this->alive;
+}
+
+void State::kill()
+{
+    this->alive = false;
 }

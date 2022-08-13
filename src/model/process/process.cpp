@@ -7,8 +7,7 @@ Process::Process(std::function<void(State*)> method)
 
 void Process::start(State* state)
 {
-  this->future = std::async(std::launch::async, [this, state]()
-                            { return this->method(state); });
+  this->future = std::async(std::launch::async, [this, state]() { return this->method(state); });
 }
 
 std::future_status Process::getStatus()

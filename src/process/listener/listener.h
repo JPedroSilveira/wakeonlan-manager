@@ -6,7 +6,13 @@
  * when something changes
  **************************************************/
 
-#include "../model/state/state.h"
+#include <thread>
+#include <chrono>
+#include <list>
+
+#include "../../utils/alive-utils/alive-utils.h"
+#include "../../model/state/state.h"
+#include "../../model/member/member.h"
 
 void ListenerProcess(State* state);
 

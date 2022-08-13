@@ -1,5 +1,5 @@
-#ifndef MACHINE_MANAGER_HEADER
-#define MACHINE_MANAGER_HEADER
+#ifndef MACHINE_INFO_HEADER
+#define MACHINE_INFO_HEADER
 
 /**************************************************
  * Collects and provides current machine
@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "../model/member/member.h"
-#include "../output/output.h"
+#include "../utils/print-utils/print-utils.h"
 
 Member getMachineInfo();
 

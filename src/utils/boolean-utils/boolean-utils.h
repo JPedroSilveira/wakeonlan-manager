@@ -1,5 +1,5 @@
-#ifndef UTILS_HEADER
-#define UTILS_HEADER
+#ifndef BOOLEAN_UTILS_HEADER
+#define BOOLEAN_UTILS_HEADER
 
 /**************************************************
  * Utilitary functions

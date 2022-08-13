@@ -1,9 +1,11 @@
-#ifndef MONITOR_HEADER
-#define MONITOR_HEADER
+#ifndef DISCOVER_HEADER
+#define DISCOVER_HEADER
 
 /**************************************************
- * Constantly does requests do update connected
- * machines status.
+ * Discover machines on the local network.
+ * - Send requests to let other machines know that
+ * this one is connected.
+ * Do requests to find other machines.
  **************************************************/
 
 #include <iostream>
@@ -22,9 +24,10 @@
 #include <thread>
 #include <chrono>
 
-#include "../output/output.h"
-#include "../model/state/state.h"
+#include "../../utils/alive-utils/alive-utils.h"
+#include "../../utils/print-utils/print-utils.h"
+#include "../../model/state/state.h"
 
-void MonitorProcess(State* state);
+void DiscoverProcess(State* state);
 
 #endif

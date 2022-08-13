@@ -2,42 +2,43 @@
 
 const int PORT = 4001;
 const int BUFFER_SIZE = 256;
-const int MONITORING_SLEEP_IN_SEC = 10;
+const int MONITORING_SLEEP_IN_SEC = 1;
 const int MONITORING_TIMEOUT_IN_SEC = 1;
 
 void sendMonitoringPackages(State* state)
 {
     while(true) {
-        for (Member member : state->membersManager.getMembers()) 
+        throwExceptionIfNotAlive(state);
+
+        for (Member member : state->getMembersManager()->getMembers()) 
         {
-            int sockfd, n;
+            int sockfd, n, ret;
             unsigned int length;
             struct sockaddr_in serv_addr, from;
             struct hostent *server;
-            
             char buffer[BUFFER_SIZE];
-
-            server = gethostbyname(member.ipv4.c_str());
-            if (server == NULL) {
-                printLine("ERROR, no such host " + member.hostname);
-                exit(0);
-            }	
+            struct timeval tv;
             
             if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
                 printLine("ERROR opening socket");
             }
 
             // Set socket timeout
-            struct timeval tv;
             tv.tv_sec = MONITORING_TIMEOUT_IN_SEC;
             tv.tv_usec = 0;
-            int ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+            ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
             if (ret)
             {
                 printf("Error: Could not set socket timeout");
                 close(sockfd);
                 return;
             }
+
+            server = gethostbyname(member.ipv4.c_str());
+            if (server == NULL) {
+                printLine("ERROR, no such host " + member.hostname);
+                exit(0);
+            }	
                 
             serv_addr.sin_family = AF_INET;     
             serv_addr.sin_port = htons(PORT);    
@@ -56,16 +57,34 @@ void sendMonitoringPackages(State* state)
             n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
             if (n < 0) {
                 printLine("ERROR receiving sleep status request");
-                state->membersManager.updateToSleepingByIPv4(member.ipv4);
+                state->getMembersManager()->updateToSleepingByIPv4(member.ipv4);
             } else {
-                state->membersManager.updateToAwakeByIPv4(member.ipv4);
+                state->getMembersManager()->updateToAwakeByIPv4(member.ipv4);
             }
             
             close(sockfd);
         }
-        
-        printMembersTable(state->membersManager);
-        
+                
+        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
+    }
+}
+
+void sendMonitoringPackagesMock(State* state) {
+    while(true)
+    {
+        throwExceptionIfNotAlive(state);
+
+        for (Member member : state->getMembersManager()->getMembers()) 
+        {
+            if (member.getStatus() == 1) 
+            {
+                state->getMembersManager()->updateToSleepingByIPv4(member.ipv4);
+            }
+            else
+            {
+                state->getMembersManager()->updateToAwakeByIPv4(member.ipv4);
+            }
+        }
         std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
     }
 }
@@ -93,9 +112,11 @@ void listenMonitoringPackages(State* state)
     clilen = sizeof(struct sockaddr_in);
 	
     while (true) {
-	n = recvfrom(sockfd, buffer, 256, 0, (struct sockaddr *) &cli_addr, &clilen);
-	if (n < 0) {
-		printLine("ERROR on receiving sleep status request");
+        throwExceptionIfNotAlive(state);
+
+        n = recvfrom(sockfd, buffer, 256, 0, (struct sockaddr *) &cli_addr, &clilen);
+        if (n < 0) {
+            printLine("ERROR on receiving sleep status request");
         } else {
             printLine("Sleep status request received");
                     
@@ -103,7 +124,7 @@ void listenMonitoringPackages(State* state)
   
             n = sendto(sockfd, message.c_str(), message.length(), 0,(struct sockaddr *) &cli_addr, sizeof(struct sockaddr));
             if (n  < 0) {
-                printf("ERROR on answering sleep status request");
+                printLine("ERROR on answering sleep status request");
             }      
         }
     }
@@ -115,12 +136,10 @@ void MonitorProcess(State* state)
 {
     if (state->self.isManager)
     {
-	printLine("Sou Manager");
         sendMonitoringPackages(state);
     }
     else
     {
-	printLine("Sou Client");
         listenMonitoringPackages(state);
     }   
 }
