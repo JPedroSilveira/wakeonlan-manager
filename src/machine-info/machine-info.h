@@ -16,7 +16,7 @@
 #include <tuple>
 #include <vector>
 
-#include "../model/member/member.h"
+#include "../entity/member/member.h"
 #include "../utils/print-utils/print-utils.h"
 
 Member getMachineInfo();

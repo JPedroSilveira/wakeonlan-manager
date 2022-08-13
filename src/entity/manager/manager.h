@@ -1,5 +1,5 @@
-#ifndef MEMBERS_MANAGER_HEADER
-#define MEMBERS_MANAGER_HEADER
+#ifndef MANAGER_HEADER
+#define MANAGER_HEADER
 
 /**************************************************
  * Manages the list of members
@@ -13,12 +13,12 @@
 #include <iostream>
 #include <list>
 
-#include "../model/member/member.h"
-#include "../exception/item-not-found/item-not-found-exception.h"
-#include "../exception/mutex-init-failure/mutex-init-failure-exception.h"
+#include "../member/member.h"
+#include "../../exception/item-not-found/item-not-found-exception.h"
+#include "../../exception/mutex-init-failure/mutex-init-failure-exception.h"
 #include <pthread.h>
 
-class MembersManager
+class Manager
 {
 private:
     std::list<Member> members;
@@ -35,7 +35,7 @@ private:
     void postMembersUpdate();
 
 public:
-    MembersManager();
+    Manager();
 
     void addMembersByMessages(std::list<std::string> messages);
 

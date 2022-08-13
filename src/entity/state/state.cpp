@@ -3,13 +3,13 @@
 State::State()
 {
     this->self = getMachineInfo();
-    this->membersManager = MembersManager{};
+    this->manager = Manager{};
     this->alive = true;
 }
 
-MembersManager* State::getMembersManager() 
+Manager* State::getManager() 
 {
-    return &(this->membersManager);
+    return &(this->manager);
 }
 
 bool State::isAlive()

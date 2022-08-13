@@ -2,15 +2,15 @@
 
 const int PORT = 4001;
 const int BUFFER_SIZE = 256;
-const int MONITORING_SLEEP_IN_SEC = 1;
-const int MONITORING_TIMEOUT_IN_SEC = 1;
+const int MONITORING_SLEEP_IN_SEC = 5;
+const int MONITORING_TIMEOUT_IN_SEC = 2;
 
 void sendMonitoringPackages(State* state)
 {
     while(true) {
         throwExceptionIfNotAlive(state);
 
-        for (Member member : state->getMembersManager()->getMembers()) 
+        for (Member member : state->getManager()->getMembers()) 
         {
             int sockfd, n, ret;
             unsigned int length;
@@ -57,9 +57,9 @@ void sendMonitoringPackages(State* state)
             n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
             if (n < 0) {
                 printLine("ERROR receiving sleep status request");
-                state->getMembersManager()->updateToSleepingByIPv4(member.ipv4);
+                state->getManager()->updateToSleepingByIPv4(member.ipv4);
             } else {
-                state->getMembersManager()->updateToAwakeByIPv4(member.ipv4);
+                state->getManager()->updateToAwakeByIPv4(member.ipv4);
             }
             
             close(sockfd);
@@ -74,15 +74,15 @@ void sendMonitoringPackagesMock(State* state) {
     {
         throwExceptionIfNotAlive(state);
 
-        for (Member member : state->getMembersManager()->getMembers()) 
+        for (Member member : state->getManager()->getMembers()) 
         {
             if (member.getStatus() == 1) 
             {
-                state->getMembersManager()->updateToSleepingByIPv4(member.ipv4);
+                state->getManager()->updateToSleepingByIPv4(member.ipv4);
             }
             else
             {
-                state->getMembersManager()->updateToAwakeByIPv4(member.ipv4);
+                state->getManager()->updateToAwakeByIPv4(member.ipv4);
             }
         }
         std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));

@@ -5,10 +5,10 @@
 #include <vector>
 
 #include "./utils/print-utils/print-utils.h"
-#include "./model/member/member.h"
+#include "./entity/member/member.h"
 #include "./machine-info/machine-info.h"
-#include "./model/state/state.h"
-#include "./model/process/process.h"
+#include "./entity/state/state.h"
+#include "./entity/process/process.h"
 #include "./process/user-input-monitor/user-input-monitor.h"
 #include "./process/discover/discover.h"
 #include "./process/monitor/monitor.h"

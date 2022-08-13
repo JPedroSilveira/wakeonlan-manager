@@ -24,7 +24,7 @@
 
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../utils/print-utils/print-utils.h"
-#include "../../model/state/state.h"
+#include "../../entity/state/state.h"
 
 void MonitorProcess(State* state);
 

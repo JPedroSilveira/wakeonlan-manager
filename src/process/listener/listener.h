@@ -11,8 +11,8 @@
 #include <list>
 
 #include "../../utils/alive-utils/alive-utils.h"
-#include "../../model/state/state.h"
-#include "../../model/member/member.h"
+#include "../../entity/state/state.h"
+#include "../../entity/member/member.h"
 
 void ListenerProcess(State* state);
 

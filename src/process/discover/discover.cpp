@@ -3,7 +3,7 @@
 const int PORT = 4000;
 const int BUFFER_SIZE = 512;
 const int BROADCAST_AWAITING_TIME_IN_SEC = 10;
-const int BROADCAST_SLEEP_TIME_IN_SEC = 10;
+const int BROADCAST_SLEEP_TIME_IN_SEC = 30;
 const int BROADCAST_TIMEOUT_IN_SEC = 10;
 
 void sendBroadcastPacket(State* state)
@@ -84,7 +84,7 @@ void sendBroadcastPacket(State* state)
 
         close(sockfd);
 
-        state->getMembersManager()->addMembersByMessages(memberMessages);
+        state->getManager()->addMembersByMessages(memberMessages);
    
         std::this_thread::sleep_for(std::chrono::seconds(BROADCAST_SLEEP_TIME_IN_SEC));
     }
@@ -98,7 +98,7 @@ void sendBroadcastPacketMock(State* state) {
         std::list<std::string> memberMessages {};
 
         memberMessages.push_back("1,192.168.0.50,e3:23:12:12:02:ee,jpedrohost,aa:bb:cc:dd:ee:ff,192.168.0.255,0");
-        state->getMembersManager()->addMembersByMessages(memberMessages);
+        state->getManager()->addMembersByMessages(memberMessages);
    
         std::this_thread::sleep_for(std::chrono::seconds(BROADCAST_SLEEP_TIME_IN_SEC));
     }

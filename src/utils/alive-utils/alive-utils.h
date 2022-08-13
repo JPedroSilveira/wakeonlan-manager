@@ -1,7 +1,7 @@
 #ifndef ALIVE_UTILS_HEADER
 #define ALIVE_UTILS_HEADER
 
-#include "../../model/state/state.h"
+#include "../../entity/state/state.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
 /**************************************************

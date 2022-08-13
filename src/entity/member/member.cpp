@@ -101,16 +101,5 @@ void Member::setIsManager(std::vector<std::string> args)
 
 std::string Member::toTableLine() 
 {
-    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->getStatus()) + "\n";
-}
-
-void printMembersTable(std::list<Member> members) {
-    std::string header = "Hostname \t | Endereço MAC \t | Endereço IPv4 \t | Status \n";
-    std::list<std::string> lines {};
-    for (Member member : members)
-    {
-        lines.push_back(member.toTableLine());
-    }
-
-    printTable(header, lines);
+    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->isAwake()) + "\n";
 }

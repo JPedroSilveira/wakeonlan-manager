@@ -2,12 +2,12 @@
 
 Member getMember(State* state, std::string address) {
     try {
-        return state->getMembersManager()->getByHostname(address);
+        return state->getManager()->getByHostname(address);
     } catch (ItemNotFoundException& e) {        
         try {
-            return state->getMembersManager()->getByIPv4(address);
+            return state->getManager()->getByIPv4(address);
         } catch (ItemNotFoundException& e) {
-            return state->getMembersManager()->getByIPv6(address);
+            return state->getManager()->getByIPv6(address);
         }
     }
 }

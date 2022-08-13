@@ -1,6 +1,6 @@
-#include "members-manager.h"
+#include "manager.h"
 
-MembersManager::MembersManager() {
+Manager::Manager() {
     #ifdef __APPLE__
         this->updateMembersSemaphore = dispatch_semaphore_create(0);
     #else
@@ -13,7 +13,7 @@ MembersManager::MembersManager() {
     }
 }
 
-void MembersManager::updateToAwakeByHostname(std::string hostname)
+void Manager::updateToAwakeByHostname(std::string hostname)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
     std::list<Member>::iterator it;
@@ -29,7 +29,7 @@ void MembersManager::updateToAwakeByHostname(std::string hostname)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void MembersManager::updateToAwakeByIPv4(std::string ipv4)
+void Manager::updateToAwakeByIPv4(std::string ipv4)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
     std::list<Member>::iterator it;
@@ -45,7 +45,7 @@ void MembersManager::updateToAwakeByIPv4(std::string ipv4)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void MembersManager::updateToAwakeByIPv6(std::string ipv6)
+void Manager::updateToAwakeByIPv6(std::string ipv6)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
     std::list<Member>::iterator it;
@@ -61,7 +61,7 @@ void MembersManager::updateToAwakeByIPv6(std::string ipv6)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void MembersManager::updateToSleepingByHostname(std::string hostname)
+void Manager::updateToSleepingByHostname(std::string hostname)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
     std::list<Member>::iterator it;
@@ -77,7 +77,7 @@ void MembersManager::updateToSleepingByHostname(std::string hostname)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void MembersManager::updateToSleepingByIPv4(std::string ipv4)
+void Manager::updateToSleepingByIPv4(std::string ipv4)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
     std::list<Member>::iterator it;
@@ -93,7 +93,7 @@ void MembersManager::updateToSleepingByIPv4(std::string ipv4)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void MembersManager::updateToSleepingByIPv6(std::string ipv6)
+void Manager::updateToSleepingByIPv6(std::string ipv6)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
     std::list<Member>::iterator it;
@@ -109,28 +109,28 @@ void MembersManager::updateToSleepingByIPv6(std::string ipv6)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-int MembersManager::removeByIPv4(std::string ipv4)
+int Manager::removeByIPv4(std::string ipv4)
 {
     int oldSize = this->members.size();
     this->members.remove_if([ipv4](const Member member) { return member.ipv4 == ipv4; });
     return oldSize - this->members.size();
 }
 
-int MembersManager::removeByIPv6(std::string ipv6)
+int Manager::removeByIPv6(std::string ipv6)
 {
     int oldSize = this->members.size();
     this->members.remove_if([ipv6](const Member member) { return member.ipv6 == ipv6; });
     return oldSize - this->members.size();
 }
 
-int MembersManager::removeByHostname(std::string hostname)
+int Manager::removeByHostname(std::string hostname)
 {
     int oldSize = this->members.size();
     this->members.remove_if([hostname](const Member member) { return member.hostname == hostname; });
     return oldSize - this->members.size();
 }
 
-void MembersManager::addMembersByMessages(std::list<std::string> messages)
+void Manager::addMembersByMessages(std::list<std::string> messages)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
 
@@ -154,7 +154,7 @@ void MembersManager::addMembersByMessages(std::list<std::string> messages)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-Member MembersManager::getByIPv4(std::string ipv4) 
+Member Manager::getByIPv4(std::string ipv4) 
 {
     for (Member member : this->members)
     {
@@ -166,7 +166,7 @@ Member MembersManager::getByIPv4(std::string ipv4)
     throw ItemNotFoundException();
 }
 
-Member MembersManager::getByIPv6(std::string ipv6)
+Member Manager::getByIPv6(std::string ipv6)
 {
     for (Member member : this->members)
     {
@@ -178,7 +178,7 @@ Member MembersManager::getByIPv6(std::string ipv6)
     throw ItemNotFoundException();
  }
 
-Member MembersManager::getByHostname(std::string hostname)
+Member Manager::getByHostname(std::string hostname)
 {
     for (Member member : this->members)
     {
@@ -190,12 +190,12 @@ Member MembersManager::getByHostname(std::string hostname)
     throw ItemNotFoundException();
 }
 
-std::list<Member> MembersManager::getMembers()
+std::list<Member> Manager::getMembers()
 {
     return this->members;
 }
 
-std::list<Member> MembersManager::getMembersWhenUpdatedAndLock()
+std::list<Member> Manager::getMembersWhenUpdatedAndLock()
 {    
     #ifdef __APPLE__
         dispatch_semaphore_wait(this->updateMembersSemaphore, DISPATCH_TIME_FOREVER);
@@ -208,12 +208,12 @@ std::list<Member> MembersManager::getMembersWhenUpdatedAndLock()
     return this->members;
 }
 
-void MembersManager::unlock()
+void Manager::unlock()
 {
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void MembersManager::postMembersUpdate()
+void Manager::postMembersUpdate()
 {
     #ifdef __APPLE__
         dispatch_semaphore_signal(this->updateMembersSemaphore);

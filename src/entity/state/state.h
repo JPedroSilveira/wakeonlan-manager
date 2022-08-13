@@ -8,18 +8,18 @@
 #include <iostream>
 #include <vector>
 #include "../member/member.h"
-#include "../../members-manager/members-manager.h"
+#include "../manager/manager.h"
 #include "../../machine-info/machine-info.h"
 
 class State
 {
 private:
-    MembersManager membersManager;
+    Manager manager;
     bool alive;
 public:
     Member self;
     State();
-    MembersManager* getMembersManager();
+    Manager* getManager();
     void kill();
     bool isAlive();
 };
