@@ -1,20 +1,30 @@
+PROJECT_NAME = wakeonlanmanager.app
+
 COMPILER = g++
 
-FLAGS = -Wall --std=c++17
+FLAGS = -Wall --std=c++11
 
-LIBS = -lpthread
+LIBS = -pthread
 
-MAIN = wakeonlanmanager
+MAIN = src/main.cpp
 
-BUILD_DIR = build
+SRCS = $(shell find ./src -iname "*.cpp")
 
-SRCS = $(wildcard src/*.cpp)
-
-all: $(MAIN)
-	$(COMPILER) $(FLAGS) -o $(MAIN) $(SRCS) $(LIBS)
+all: $(PROJECT_NAME)
 	@echo Project compiled
 
-run: $(MAIN)
-	./$(MAIN) $(ARGS)
+$(PROJECT_NAME): $(MAIN)
+	$(COMPILER) $(FLAGS) -o $(PROJECT_NAME) $(SRCS) $(LIBS)
+	
+runclient: $(PROJECT_NAME)
+	./$(PROJECT_NAME)
 
-go: all run
+runmanager: $(PROJECT_NAME)
+	./$(PROJECT_NAME) manager
+
+clean:
+	rm -rf *.o main $(PROJECT_NAME)
+
+manager: clean all runmanager
+
+client: clean all runclient
