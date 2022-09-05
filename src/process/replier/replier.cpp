@@ -118,12 +118,12 @@ void receiveAndSaveUpdates(State* state)
 
             std::istringstream receivedMessageStream(receivedMessage);
 
-            // TODO: while (receivedMessageStream != empty) {
+            while (receivedMessageStream.rdbuf->in_avail() != 0) { //Lê a quantidade de bits que existem no Buffer
                 std::string member = {};    
                 std::getline(receivedMessageStream, member, LIST_SEPARATOR.at(0));
                 member.erase(std::remove(member.begin(), member.end(), '\n'), member.end());
                 membersMessages.push_back(member);
-            //}
+            }
 
             state->getManager()->setMembersByMessages(membersMessages);
                     
