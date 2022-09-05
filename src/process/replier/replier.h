@@ -1,30 +1,34 @@
-#ifndef MONITOR_HEADER
-#define MONITOR_HEADER
+#ifndef REPLIER_HEADER
+#define REPLIER_HEADER
 
 /**************************************************
- * Constantly does requests do update connected
- * machines status.
+ * Monitor members and send them to all
+ * machines in the wakeonlan network
  **************************************************/
 
+#include <thread>
 #include <iostream>
-#include <sys/types.h>
+#include <chrono>
+#include <list>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/types.h>
 #include <string.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <arpa/inet.h>
+#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
-#include <thread>
-#include <chrono>
+#include <sstream>
+#include <algorithm>
 
 #include "../../utils/alive-utils/alive-utils.h"
-#include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
+#include "../../entity/member/member.h"
 
-void MonitorProcess(State* state);
+void ReplierProcess(State* state);
 
 #endif

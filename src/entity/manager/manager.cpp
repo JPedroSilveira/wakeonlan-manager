@@ -166,6 +166,23 @@ void Manager::addMembersByMessages(std::list<std::string> messages)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
+void Manager::setMembersByMessages(std::list<std::string> messages)
+{
+    pthread_mutex_lock(&(this->changeMembersLock));
+
+    this->members.clear();
+
+    for (std::string message : messages) {
+        Member member {};
+        member.fromMessage(message);
+        this->members.push_back(member);
+    }
+
+    this->postMembersUpdate();
+
+    pthread_mutex_unlock(&(this->changeMembersLock));
+}
+
 Member Manager::getByAddress(std::string address)
 {
     try {

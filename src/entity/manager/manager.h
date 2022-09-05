@@ -38,6 +38,7 @@ public:
     Manager();
 
     void addMembersByMessages(std::list<std::string> messages);
+    void setMembersByMessages(std::list<std::string> messages);
 
     void updateToAwakeByIPv4(std::string ipv4);
     void updateToAwakeByIPv6(std::string ipv6);
