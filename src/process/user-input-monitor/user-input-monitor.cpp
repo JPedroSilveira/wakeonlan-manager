@@ -16,7 +16,7 @@ void UserInputMonitorProcess(State* state)
 	        printLine("Waking up " + address);
             try {
                 Member member = state->getManager()->getByAddress(address);
-                wakeUp(member.mac);
+                sendMagicPacket(member.mac);
             } catch (ItemNotFoundException& e) {         
                 printLine("Address not found!");
             }

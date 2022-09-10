@@ -2,14 +2,14 @@
 #define STATE_HEADER
 
 /**************************************************
- * Input entry for a generic process
+ * Application state
  **************************************************/
 
 #include <iostream>
 #include <vector>
 #include "../member/member.h"
 #include "../manager/manager.h"
-#include "../../machine-info/machine-info.h"
+#include "../../utils/machine-info-utils/machine-info-utils.h"
 
 class State
 {

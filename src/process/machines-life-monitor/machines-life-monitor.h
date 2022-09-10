@@ -1,9 +1,12 @@
-#ifndef MONITOR_HEADER
-#define MONITOR_HEADER
+#ifndef MACHINES_LIFE_MONITOR_HEADER
+#define MACHINES_LIFE_MONITOR_HEADER
 
 /**************************************************
- * Constantly does requests do update connected
- * machines status.
+ * If manager: send messages to all member machines
+ * to check if they are awake and update the state
+ * with the results
+ * 
+ * Else: receives is-awake packages and answer them
  **************************************************/
 
 #include <iostream>
@@ -24,7 +27,8 @@
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
+#include "../../constants/network-port-constants/network-port-constants.h"
 
-void MonitorProcess(State* state);
+void MachinesLifeMonitorProcess(State* state);
 
 #endif

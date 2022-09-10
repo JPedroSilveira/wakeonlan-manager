@@ -1,11 +1,13 @@
-#ifndef DISCOVER_HEADER
-#define DISCOVER_HEADER
+#ifndef MACHINES_FINDER_HEADER
+#define MACHINES_FINDER_HEADER
 
 /**************************************************
- * Discover machines on the local network.
- * - Send requests to let other machines know that
- * this one is connected.
- * Do requests to find other machines.
+ * If manager: find out machines on local network
+ * sending is-member packages
+ * 
+ * Else: answer is-member packages to let manager
+ * knows that the machine want to be part of the
+ * members network
  **************************************************/
 
 #include <iostream>
@@ -27,7 +29,8 @@
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
+#include "../../constants/network-port-constants/network-port-constants.h"
 
-void DiscoverProcess(State* state);
+void MachinesFinderProcess(State* state);
 
 #endif

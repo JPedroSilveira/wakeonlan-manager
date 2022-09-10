@@ -1,4 +1,4 @@
-#include "listener.h"
+#include "machines-update-printer.h"
 
 const int LISTENING_SLEEP_IN_SEC = 5;
 
@@ -29,23 +29,7 @@ void listenAndPrintUpdates(State* state)
     }
 }
 
-void doNothing(State* state)
+void MachinesUpdatePrinter(State* state)
 {
-    while(true) 
-    {
-        throwExceptionIfNotAlive(state);
-        std::this_thread::sleep_for(std::chrono::seconds(LISTENING_SLEEP_IN_SEC));
-    }
-}
-
-void ListenerProcess(State* state)
-{
-    if (state->self.isManager)
-    {
-        listenAndPrintUpdates(state);
-    }
-    else
-    {
-        doNothing(state);
-    }
+    listenAndPrintUpdates(state);
 }

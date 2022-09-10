@@ -1,9 +1,9 @@
-#ifndef MACHINE_INFO_HEADER
-#define MACHINE_INFO_HEADER
+#ifndef MACHINE_INFO_UTILS_HEADER
+#define MACHINE_INFO_UTILS_HEADER
 
 /**************************************************
- * Collects and provides current machine
- * information.
+ * Collects and provides information about the
+ * machine that application is running on.
  **************************************************/
 
 #include <thread>

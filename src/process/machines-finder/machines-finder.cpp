@@ -1,6 +1,5 @@
-#include "discover.h"
+#include "machines-finder.h"
 
-const int PORT = 4000;
 const int BUFFER_SIZE = 512;
 const int BROADCAST_AWAITING_TIME_IN_SEC = 10;
 const int BROADCAST_SLEEP_TIME_IN_SEC = 30;
@@ -51,8 +50,8 @@ void sendBroadcastPacket(State* state)
         broadcastAddr.sin_family = AF_INET;
 
         // Set the broadcast IP address
-        inet_pton(AF_INET, "143.54.55.63", &broadcastAddr.sin_addr); 
-        broadcastAddr.sin_port = htons(PORT);                                   
+        inet_pton(AF_INET, state->self.broadcast.c_str(), &broadcastAddr.sin_addr); 
+        broadcastAddr.sin_port = htons(MACHINE_FINDER_PORT);                                   
 
         // Send the broadcast request
         std::string message = state->self.toMessage();
@@ -118,7 +117,7 @@ void receiveBroadcastPacket(State* state)
     }
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_port = htons(MACHINE_FINDER_PORT);
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     bzero(&(serv_addr.sin_zero), 8);
 
@@ -152,7 +151,7 @@ void receiveBroadcastPacket(State* state)
     close(sockfd);
 }
 
-void DiscoverProcess(State* state)
+void MachinesFinderProcess(State* state)
 {
     if (state->self.isManager)
     {

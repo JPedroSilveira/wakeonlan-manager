@@ -1,14 +1,24 @@
-#include "monitor.h"
+#include "machines-table-replier.h"
 
-const int PORT = 4001;
-const int BUFFER_SIZE = 256;
-const int MONITORING_SLEEP_IN_SEC = 5;
-const int MONITORING_TIMEOUT_IN_SEC = 2;
+const int BUFFER_SIZE = 65000;
+const int SLEEP_IN_SEC = 5;
+const int SOCKET_TIMEOUT_IN_SEC = 2;
+const std::string LIST_SEPARATOR = ";";
 
-void sendMonitoringPackages(State* state)
+void listenAndSendUpdates(State* state)
 {
-    while(true) {
+    while(true)
+    {
         throwExceptionIfNotAlive(state);
+
+        std::list<Member> members = state->getManager()->getMembersWhenUpdatedAndLock();
+
+        std::string message = {};
+
+        for (Member member : members) {
+            message += member.toMessage();
+            message += LIST_SEPARATOR;
+        }
 
         for (Member member : state->getManager()->getMembers()) 
         {
@@ -23,8 +33,7 @@ void sendMonitoringPackages(State* state)
                 printLine("ERROR opening socket");
             }
 
-            // Set socket timeout
-            tv.tv_sec = MONITORING_TIMEOUT_IN_SEC;
+            tv.tv_sec = SOCKET_TIMEOUT_IN_SEC;
             tv.tv_usec = 0;
             ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
             if (ret)
@@ -41,55 +50,32 @@ void sendMonitoringPackages(State* state)
             }	
                 
             serv_addr.sin_family = AF_INET;     
-            serv_addr.sin_port = htons(PORT);    
+            serv_addr.sin_port = htons(MACHINE_TABLE_REPLIER_PORT);    
             serv_addr.sin_addr = *((struct in_addr *)server->h_addr);
             bzero(&(serv_addr.sin_zero), 8);  
 
-            std::string message = "Are you alive?";
-
             n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
             if (n < 0) {
-                printLine("ERROR sending sleep status request");
+                printLine("ERROR sending reply state request");
             }
                 
             length = sizeof(struct sockaddr_in);
 
             n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
             if (n < 0) {
-                printLine("ERROR receiving sleep status request");
-                state->getManager()->updateToSleepingByIPv4(member.ipv4);
-            } else {
-                state->getManager()->updateToAwakeByIPv4(member.ipv4);
+                printLine("ERROR receiving reply state request");
             }
             
             close(sockfd);
         }
-                
-        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
+
+        state->getManager()->unlock();
+
+        std::this_thread::sleep_for(std::chrono::seconds(SLEEP_IN_SEC));
     }
 }
 
-void sendMonitoringPackagesMock(State* state) {
-    while(true)
-    {
-        throwExceptionIfNotAlive(state);
-
-        for (Member member : state->getManager()->getMembers()) 
-        {
-            if (member.getStatus() == 1) 
-            {
-                state->getManager()->updateToSleepingByIPv4(member.ipv4);
-            }
-            else
-            {
-                state->getManager()->updateToAwakeByIPv4(member.ipv4);
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
-    }
-}
-
-void listenMonitoringPackages(State* state)
+void receiveAndSaveUpdates(State* state)
 {
     int sockfd, n;
 	socklen_t clilen;
@@ -101,7 +87,7 @@ void listenMonitoringPackages(State* state)
     }
 
 	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(PORT);
+	serv_addr.sin_port = htons(MACHINE_TABLE_REPLIER_PORT);
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	bzero(&(serv_addr.sin_zero), 8);    
 	 
@@ -114,17 +100,32 @@ void listenMonitoringPackages(State* state)
     while (true) {
         throwExceptionIfNotAlive(state);
 
-        n = recvfrom(sockfd, buffer, 256, 0, (struct sockaddr *) &cli_addr, &clilen);
+        n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
         if (n < 0) {
-            printLine("ERROR on receiving sleep status request");
+            printLine("ERROR on receiving reply state request");
         } else {
-            printLine("Sleep status request received");
+            printLine("Reply state received from manager");
+
+            std::list<std::string> membersMessages = {};
+
+            std::string receivedMessage = std::string(buffer);
+
+            std::istringstream receivedMessageStream(receivedMessage);
+
+            while (!receivedMessageStream.eof()) {
+                std::string member = {};    
+                std::getline(receivedMessageStream, member, LIST_SEPARATOR.at(0));
+                member.erase(std::remove(member.begin(), member.end(), '\n'), member.end());
+                membersMessages.push_back(member);
+            }
+
+            state->getManager()->setMembersByMessages(membersMessages);
                     
-            std::string message = "I am alive!";
+            std::string message = "Got it!";
   
             n = sendto(sockfd, message.c_str(), message.length(), 0,(struct sockaddr *) &cli_addr, sizeof(struct sockaddr));
             if (n  < 0) {
-                printLine("ERROR on answering sleep status request");
+                printLine("ERROR on answering reply state request");
             }      
         }
     }
@@ -132,14 +133,14 @@ void listenMonitoringPackages(State* state)
     close(sockfd);
 }
 
-void MonitorProcess(State* state)
+void MachinesTableReplierProcess(State* state)
 {
     if (state->self.isManager)
     {
-        sendMonitoringPackages(state);
+        listenAndSendUpdates(state);
     }
     else
     {
-        listenMonitoringPackages(state);
-    }   
+        receiveAndSaveUpdates(state);
+    }
 }

@@ -1,9 +1,15 @@
-#ifndef REPLIER_HEADER
-#define REPLIER_HEADER
+#ifndef MACHINES_TABLE_REPLIER_HEADER
+#define MACHINES_TABLE_REPLIER_HEADER
 
 /**************************************************
- * Monitor members and send them to all
- * machines in the wakeonlan network
+ * If manager: send members-replier packages 
+ * to all machines with the updated members table, 
+ * allowing this information to be replicated in 
+ * all of members
+ * 
+ * Else: receives members-replier packages and 
+ * save the updated list of member on application 
+ * state
  **************************************************/
 
 #include <thread>
@@ -28,7 +34,8 @@
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../entity/state/state.h"
 #include "../../entity/member/member.h"
+#include "../../constants/network-port-constants/network-port-constants.h"
 
-void ReplierProcess(State* state);
+void MachinesTableReplierProcess(State* state);
 
 #endif

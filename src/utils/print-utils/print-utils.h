@@ -2,8 +2,7 @@
 #define PRINT_UTILS_HEADER
 
 /**************************************************
- * Define default methods to print data on terminal.
- * printLine: print a string in one line and flush
+ * Provide methods to print data on terminal.
  **************************************************/
 
 #include <iostream>
