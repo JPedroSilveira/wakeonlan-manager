@@ -3,9 +3,9 @@
 
 /**************************************************
  * If manager: find out machines on local network
- * sending is-member packages
+ * sending is-member packets
  * 
- * Else: answer is-member packages to let manager
+ * Else: answer is-member packets to let manager
  * knows that the machine want to be part of the
  * members network
  **************************************************/

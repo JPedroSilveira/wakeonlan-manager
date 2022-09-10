@@ -46,7 +46,7 @@ void listenAndSendUpdates(State* state)
             server = gethostbyname(member.ipv4.c_str());
             if (server == NULL) {
                 printLine("ERROR, no such host " + member.hostname);
-                exit(0);
+                return;
             }	
                 
             serv_addr.sin_family = AF_INET;     

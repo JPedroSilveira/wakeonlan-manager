@@ -4,7 +4,7 @@ const int BUFFER_SIZE = 256;
 const int MONITORING_SLEEP_IN_SEC = 5;
 const int MONITORING_TIMEOUT_IN_SEC = 2;
 
-void sendMonitoringPackages(State* state)
+void sendMonitoringPackets(State* state)
 {
     while(true) {
         throwExceptionIfNotAlive(state);
@@ -36,7 +36,7 @@ void sendMonitoringPackages(State* state)
             server = gethostbyname(member.ipv4.c_str());
             if (server == NULL) {
                 printLine("ERROR, no such host " + member.hostname);
-                exit(0);
+                return;
             }	
                 
             serv_addr.sin_family = AF_INET;     
@@ -68,7 +68,7 @@ void sendMonitoringPackages(State* state)
     }
 }
 
-void sendMonitoringPackagesMock(State* state) {
+void sendMonitoringPacketsMock(State* state) {
     while(true)
     {
         throwExceptionIfNotAlive(state);
@@ -88,7 +88,7 @@ void sendMonitoringPackagesMock(State* state) {
     }
 }
 
-void listenMonitoringPackages(State* state)
+void listenMonitoringPackets(State* state)
 {
     int sockfd, n;
 	socklen_t clilen;
@@ -116,9 +116,7 @@ void listenMonitoringPackages(State* state)
         n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
         if (n < 0) {
             printLine("ERROR on receiving sleep status request");
-        } else {
-            printLine("Sleep status request received");
-                    
+        } else {                    
             std::string message = "I am alive!";
   
             n = sendto(sockfd, message.c_str(), message.length(), 0,(struct sockaddr *) &cli_addr, sizeof(struct sockaddr));
@@ -135,10 +133,10 @@ void MachinesLifeMonitorProcess(State* state)
 {
     if (state->self.isManager)
     {
-        sendMonitoringPackages(state);
+        sendMonitoringPackets(state);
     }
     else
     {
-        listenMonitoringPackages(state);
+        listenMonitoringPackets(state);
     }   
 }

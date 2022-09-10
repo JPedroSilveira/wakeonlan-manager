@@ -120,5 +120,7 @@ Member getMachineInfo()
 
     member.broadcast = getBroadcast(member.ipv4);
 
+    member.pid = getpid();
+
     return member;
 }

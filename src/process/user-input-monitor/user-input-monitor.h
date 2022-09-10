@@ -17,7 +17,7 @@
 #include "../../utils/print-utils/print-utils.h"
 #include "../../utils/wake-on-lan-utils/wake-on-lan-utils.h"
 #include "../../entity/state/state.h"
-#include "../../exception/item-not-found/item-not-found-exception.h"
+#include "../../exception/item-not-found-exception/item-not-found-exception.h"
 
 void UserInputMonitorProcess(State* state);
 

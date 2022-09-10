@@ -14,7 +14,7 @@
 #include <list>
 
 #include "../member/member.h"
-#include "../../exception/item-not-found/item-not-found-exception.h"
+#include "../../exception/item-not-found-exception/item-not-found-exception.h"
 #include "../../exception/mutex-init-failure/mutex-init-failure-exception.h"
 #include <pthread.h>
 

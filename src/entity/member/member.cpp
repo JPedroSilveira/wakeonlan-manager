@@ -11,6 +11,7 @@ Member::Member()
     this->mac = "";
     this->broadcast = "";
     this->isManager = false;
+    this->pid = 0;
 }
 
 bool Member::isAwake()
@@ -37,7 +38,8 @@ std::string Member::toMessage()
         .append(this->hostname).append(SEPARATOR)
         .append(this->mac).append(SEPARATOR)
         .append(this->broadcast).append(SEPARATOR)
-        .append(booleanToString(this->isManager)).append(SEPARATOR);
+        .append(booleanToString(this->isManager)).append(SEPARATOR)
+        .append(std::to_string(this->pid)).append(SEPARATOR);
     return message;
 }
 
@@ -73,6 +75,10 @@ void Member::fromMessage(std::string message)
     std::getline(stream, attribute, SEPARATOR.at(0));
     attribute.erase(std::remove(attribute.begin(), attribute.end(), '\n'), attribute.end());
     this->isManager = stringToBoolean(attribute);
+
+    std::getline(stream, attribute, SEPARATOR.at(0));
+    attribute.erase(std::remove(attribute.begin(), attribute.end(), '\n'), attribute.end());
+    this->pid = std::stoi(attribute);
 }
 
 int Member::getStatus() 

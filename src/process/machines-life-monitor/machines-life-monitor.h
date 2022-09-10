@@ -6,7 +6,7 @@
  * to check if they are awake and update the state
  * with the results
  * 
- * Else: receives is-awake packages and answer them
+ * Else: receives is-awake packets and answer them
  **************************************************/
 
 #include <iostream>

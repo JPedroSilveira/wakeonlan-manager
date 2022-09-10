@@ -29,6 +29,7 @@ public:
     std::string hostname;
     std::string broadcast;
     std::string mac;
+    int pid;
     bool isManager;
     Member();
     int getStatus();

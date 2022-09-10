@@ -185,9 +185,12 @@ void Manager::setMembersByMessages(std::list<std::string> messages)
 
 Member Manager::getByAddress(std::string address)
 {
-    try {
+    try 
+    {
         return this->getByHostname(address);
-    } catch (ItemNotFoundException& e) {        
+    } 
+    catch (ItemNotFoundException& e) 
+    {        
         try {
             return this->getByIPv4(address);
         } catch (ItemNotFoundException& e) {

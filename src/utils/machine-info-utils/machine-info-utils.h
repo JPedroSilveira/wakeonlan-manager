@@ -15,6 +15,7 @@
 #include <arpa/inet.h>
 #include <tuple>
 #include <vector>
+#include <sys/types.h>
 
 #include "../entity/member/member.h"
 #include "../utils/print-utils/print-utils.h"

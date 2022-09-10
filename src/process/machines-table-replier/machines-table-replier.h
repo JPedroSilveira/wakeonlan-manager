@@ -2,12 +2,12 @@
 #define MACHINES_TABLE_REPLIER_HEADER
 
 /**************************************************
- * If manager: send members-replier packages 
+ * If manager: send members-replier packets 
  * to all machines with the updated members table, 
  * allowing this information to be replicated in 
  * all of members
  * 
- * Else: receives members-replier packages and 
+ * Else: receives members-replier packets and 
  * save the updated list of member on application 
  * state
  **************************************************/
