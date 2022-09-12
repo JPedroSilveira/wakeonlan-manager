@@ -22,7 +22,6 @@ void sendMonitoringPackets(State* state)
                 printLine("ERROR opening socket");
             }
 
-            // Set socket timeout
             tv.tv_sec = MONITORING_TIMEOUT_IN_SEC;
             tv.tv_usec = 0;
             ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
@@ -36,6 +35,7 @@ void sendMonitoringPackets(State* state)
             server = gethostbyname(member.ipv4.c_str());
             if (server == NULL) {
                 printLine("ERROR, no such host " + member.hostname);
+                close(sockfd);
                 return;
             }	
                 
@@ -47,18 +47,21 @@ void sendMonitoringPackets(State* state)
             std::string message = "Are you alive?";
 
             n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
-            if (n < 0) {
+            if (n < 0) 
+            {
                 printLine("ERROR sending sleep status request");
             }
-                
-            length = sizeof(struct sockaddr_in);
+            else
+            {
+                length = sizeof(struct sockaddr_in);
 
-            n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
-            if (n < 0) {
-                printLine("ERROR receiving sleep status request");
-                state->getManager()->updateToSleepingByIPv4(member.ipv4);
-            } else {
-                state->getManager()->updateToAwakeByIPv4(member.ipv4);
+                n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
+                if (n < 0) {
+                    printLine("ERROR receiving sleep status request");
+                    state->getManager()->updateToSleepingByIPv4(member.ipv4);
+                } else {
+                    state->getManager()->updateToAwakeByIPv4(member.ipv4);
+                }
             }
             
             close(sockfd);

@@ -13,6 +13,23 @@ Manager::Manager() {
     }
 }
 
+void Manager::fireMemberManager()
+{
+    pthread_mutex_lock(&(this->changeMembersLock));
+    std::list<Member>::iterator it;
+    for (it = this->members.begin(); it != this->members.end(); it++)
+    {
+        if (it->isManager)
+        {
+            it->isManager = false;
+            it->setMemberAsSleeping();
+            this->postMembersUpdate();
+            break;
+        }
+    }
+    pthread_mutex_unlock(&(this->changeMembersLock));
+}
+
 void Manager::updateToAwakeByHostname(std::string hostname)
 {
     pthread_mutex_lock(&(this->changeMembersLock));

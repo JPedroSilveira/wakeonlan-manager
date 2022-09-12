@@ -4,6 +4,11 @@
 /**************************************************
  * Application state
  **************************************************/
+#ifdef __APPLE__
+#include <dispatch/dispatch.h>
+#else
+#include <semaphore.h>
+#endif
 
 #include <iostream>
 #include <vector>
@@ -16,18 +21,29 @@ class State
 {
 private:
     Manager manager;
-    int failToContactManagerCount;
     bool alive;
+    int failToContactManagerCount;
+    #ifdef __APPLE__
+        dispatch_semaphore_t    updateFailToContactManagerCountSemaphore;
+    #else
+        sem_t                   updateFailToContactManagerCountSemaphore;
+    #endif
+    pthread_mutex_t changeFailToContactManagerCountLock;
+    pthread_mutex_t isDoingElectionLock;
+    void postFailToContactManagerCountUpdate();
 public:
+    bool isDoingElection;
     Member self;
     Member getManagerMember();
     State();
     Manager* getManager();
     void kill();
     bool isAlive();
-    int getFailToContactManagerCount();
+    int getFailToContactManagerCountWhenUpdated();
     void increaseFailToContactManagerCount();
+    void increaseFailtToContactManagerCountBy(int quantity);
     void resetFailToContactManagerCount();
+    void unlockFailToContactManagerCountLock();
 };
 
 #endif

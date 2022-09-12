@@ -1,20 +1,3 @@
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <future>
-#include <vector>
-
-#include "./utils/print-utils/print-utils.h"
-#include "./entity/member/member.h"
-#include "./utils/machine-info-utils/machine-info-utils.h"
-#include "./entity/state/state.h"
-#include "./entity/process/process.h"
-#include "./process/user-input-monitor/user-input-monitor.h"
-#include "./process/machines-finder/machines-finder.h"
-#include "./process/machines-life-monitor/machines-life-monitor.h"
-#include "./process/machines-update-printer/machines-update-printer.h"
-#include "./process/machines-table-replier/machines-table-replier.h"
-
 /**************************************************
  * A distributed system that monitors the state of 
  * machines on a LAN and allows users to wake up 
@@ -31,6 +14,25 @@
  *  - Victoria Duarte
  *  - Alice Carra
  **************************************************/
+
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <future>
+#include <vector>
+
+#include "./utils/print-utils/print-utils.h"
+#include "./entity/member/member.h"
+#include "./utils/machine-info-utils/machine-info-utils.h"
+#include "./entity/state/state.h"
+#include "./entity/process/process.h"
+#include "./process/user-input-monitor/user-input-monitor.h"
+#include "./process/machines-finder/machines-finder.h"
+#include "./process/machines-life-monitor/machines-life-monitor.h"
+#include "./process/machines-update-printer/machines-update-printer.h"
+#include "./process/machines-table-replier/machines-table-replier.h"
+#include "./process/manager-life-monitor/manager-life-monitor.h"
+#include "./process/election/election-listener.h"
 
 State state = State();
 
@@ -49,11 +51,17 @@ int main(int argc, char *argv[])
     Process machinesFinderProcess{MachinesFinderProcess};
     machinesFinderProcess.start(&state);
 
-    Process machinesUpdatePrinter{MachinesUpdatePrinter};
-    machinesUpdatePrinter.start(&state);
+    Process machinesUpdatePrinterProcess{MachinesUpdatePrinter};
+    machinesUpdatePrinterProcess.start(&state);
 
     Process machinesTableReplierProcess{MachinesTableReplierProcess};
     machinesTableReplierProcess.start(&state);
+
+    Process managerLifeMonitorProcess{ManagerLifeMonitorProcess};
+    managerLifeMonitorProcess.start(&state);
+
+    Process electionListener{ElectionListenerProcess};
+    electionListener.start(&state);
 
     do
     {
@@ -62,8 +70,10 @@ int main(int argc, char *argv[])
         userInputMonitorProcess.getStatus() != std::future_status::ready &&
         machinesLifeMonitorProcess.getStatus() != std::future_status::ready &&
         machinesFinderProcess.getStatus() != std::future_status::ready && 
-        machinesUpdatePrinter.getStatus() != std::future_status::ready && 
-        machinesTableReplierProcess.getStatus() != std::future_status::ready
+        machinesUpdatePrinterProcess.getStatus() != std::future_status::ready && 
+        machinesTableReplierProcess.getStatus() != std::future_status::ready &&
+        managerLifeMonitorProcess.getStatus() != std::future_status::ready &&
+        electionListener.getStatus() != std::future_status::ready
     );
 
     state.kill();

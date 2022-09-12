@@ -23,7 +23,6 @@ void sendManagerIsAlivePacket(State* state)
                 printLine("ERROR opening socket");
             }
 
-            // Set socket timeout
             tv.tv_sec = CONNECTION_TIMEOUT_IN_SEC;
             tv.tv_usec = 0;
             ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
@@ -48,18 +47,21 @@ void sendManagerIsAlivePacket(State* state)
             std::string message = "Are you alive?";
 
             n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
-            if (n < 0) {
+            if (n < 0) 
+            {
                 printLine("ERROR sending sleep status request");
             }
-                
-            length = sizeof(struct sockaddr_in);
+            else
+            {
+                length = sizeof(struct sockaddr_in);
 
-            n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
-            if (n < 0) {
-                printLine("ERROR receiving sleep status request");
-                state->increaseFailToContactManagerCount();
-            } else {
-                state->resetFailToContactManagerCount();
+                n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *) &from, &length);
+                if (n < 0) {
+                    printLine("ERROR receiving sleep status request");
+                    state->increaseFailToContactManagerCount();
+                } else {
+                    state->resetFailToContactManagerCount();
+                }
             }
             
             close(sockfd);

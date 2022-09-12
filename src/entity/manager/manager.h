@@ -37,6 +37,8 @@ private:
 public:
     Manager();
 
+    void fireMemberManager();
+
     void addMembersByMessages(std::list<std::string> messages);
     void setMembersByMessages(std::list<std::string> messages);
 
