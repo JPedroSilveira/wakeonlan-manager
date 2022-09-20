@@ -3,6 +3,7 @@
 const int BUFFER_SIZE = 256;
 const int MONITORING_SLEEP_IN_SEC = 2;
 const int MONITORING_TIMEOUT_IN_SEC = 2;
+const int NEW_MANAGER_MESSAGE_TIMEOUT_IN_SEC = 2;
 const int TIME_TO_AWAIT_FOR_NEW_MANAGER_IN_SEC = 60;
 
 void sendNewManagerMessage(State* state)
@@ -28,7 +29,7 @@ void sendNewManagerMessage(State* state)
             throw ElectionException();
         }
 
-        tv.tv_sec = MONITORING_TIMEOUT_IN_SEC;
+        tv.tv_sec = NEW_MANAGER_MESSAGE_TIMEOUT_IN_SEC;
         tv.tv_usec = 0;
         ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
         if (ret)
@@ -72,9 +73,10 @@ void sendNewManagerMessage(State* state)
     }
 }
 
-// TODO: Listen for "new-manager-packet" during TIME_TO_AWAIT_FOR_NEW_MANAGER_IN_SEC
-// Save new members table received from new manager
-// Another process should do it in parallel and this one should only await for a confirmation
+// TODO: 
+// Escutar pelo pacote "new-manager-packet" durante TIME_TO_AWAIT_FOR_NEW_MANAGER_IN_SEC
+// Se receber uma requisição: atualizar sua tabela de membros, colocando para true a flag isManager do novo membro manager e retornar true
+// Se não: retornar false
 bool verifyIfNewManagerWasDefined(State* state)
 {
     int sockfd, newsockfd, n;
@@ -220,8 +222,9 @@ bool tryDoElection(State* state)
         } 
         else 
         {
+            bool electionDone = verifyIfNewManagerWasDefined(state);
             state->isDoingElection = false;
-            return verifyIfNewManagerWasDefined(state);
+            return electionDone;
         }
     }
     catch (ElectionException& e) 
@@ -239,15 +242,19 @@ void ElectionProcess(State* state)
 
         int failToContactManagerCount = state->getFailToContactManagerCountWhenUpdated();
 
-        if (failToContactManagerCount >= FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD) {
+        if (failToContactManagerCount >= FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD) 
+        {
             bool electionDone = false;
             while(!electionDone)
             {
                 electionDone = tryDoElection(state);
             }
+            state->resetAndUnlockFailToContactManagerCountLock();
         }
-
-        state->unlockFailToContactManagerCountLock();
+        else 
+        {
+            state->unlockFailToContactManagerCountLock();
+        }
 
         std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
     }

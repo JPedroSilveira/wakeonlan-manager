@@ -93,6 +93,13 @@ void State::unlockFailToContactManagerCountLock()
     pthread_mutex_unlock(&(this->changeFailToContactManagerCountLock));
 }
 
+void State::resetAndUnlockFailToContactManagerCountLock()
+{
+    this->failToContactManagerCount = 0;
+    pthread_mutex_unlock(&(this->changeFailToContactManagerCountLock));
+}
+
+
 void State::postFailToContactManagerCountUpdate()
 {
     #ifdef __APPLE__

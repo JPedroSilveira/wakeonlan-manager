@@ -44,6 +44,7 @@ public:
     void increaseFailtToContactManagerCountBy(int quantity);
     void resetFailToContactManagerCount();
     void unlockFailToContactManagerCountLock();
+    void resetAndUnlockFailToContactManagerCountLock();
 };
 
 #endif
