@@ -28,6 +28,6 @@
 #include "../../constants/election-constants/election-constants.h"
 #include "../../exception/election-exception/election-exception.h"
 
-void ElectionProcess(State* state);
+void ElectionProcess(State *state);
 
 #endif

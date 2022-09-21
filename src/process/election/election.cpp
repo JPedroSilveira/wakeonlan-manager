@@ -6,9 +6,9 @@ const int MONITORING_TIMEOUT_IN_SEC = 2;
 const int NEW_MANAGER_MESSAGE_TIMEOUT_IN_SEC = 2;
 const int TIME_TO_AWAIT_FOR_NEW_MANAGER_IN_SEC = 60;
 
-void sendNewManagerMessage(State* state)
+void sendNewManagerMessage(State *state)
 {
-    for (Member member : state->getManager()->getMembers()) 
+    for (Member member : state->getManager()->getMembers())
     {
         int sockfd, n, ret;
         struct sockaddr_in serv_addr;
@@ -16,14 +16,14 @@ void sendNewManagerMessage(State* state)
         char buffer[BUFFER_SIZE];
         struct timeval tv;
 
-	    server = gethostbyname(member.ipv4.c_str());
-        if (server == NULL) 
+        server = gethostbyname(member.ipv4.c_str());
+        if (server == NULL)
         {
             printLine("ERROR, no such host");
             throw ElectionException();
         }
-        
-        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) 
+
+        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         {
             printLine("ERROR opening socket");
             throw ElectionException();
@@ -38,23 +38,23 @@ void sendNewManagerMessage(State* state)
             close(sockfd);
             throw ElectionException();
         }
-    
-        serv_addr.sin_family = AF_INET;     
-        serv_addr.sin_port = htons(NEW_MANAGER_ANNOUNCEMENT_PORT);    
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(NEW_MANAGER_ANNOUNCEMENT_PORT);
         serv_addr.sin_addr = *((struct in_addr *)server->h_addr);
-        bzero(&(serv_addr.sin_zero), 8);     
-	
-	    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
+        bzero(&(serv_addr.sin_zero), 8);
+
+        if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
             printLine("ERROR connecting with host " + member.ipv4);
             close(sockfd);
             break;
         }
-            
+
         std::string message = "I'm the new manager!";
-    
+
         n = write(sockfd, buffer, strlen(buffer));
-        if (n < 0) 
+        if (n < 0)
         {
             printLine("ERROR writing to socket");
             close(sockfd);
@@ -62,9 +62,9 @@ void sendNewManagerMessage(State* state)
         }
 
         bzero(buffer, BUFFER_SIZE);
-	
+
         n = read(sockfd, buffer, BUFFER_SIZE);
-        if (n < 0) 
+        if (n < 0)
         {
             printLine("No message received from " + member.ipv4);
         }
@@ -73,49 +73,66 @@ void sendNewManagerMessage(State* state)
     }
 }
 
-// TODO: 
+// Dummy function, apenas para dar o trigger no alarme
+void handle_sigalarm(int sig)
+{
+}
+
+// TODO:
 // Escutar pelo pacote "new-manager-packet" durante TIME_TO_AWAIT_FOR_NEW_MANAGER_IN_SEC
 // Se receber uma requisição: atualizar sua tabela de membros, colocando para true a flag isManager do novo membro manager e retornar true
 // Se não: retornar false
-bool verifyIfNewManagerWasDefined(State* state)
+bool verifyIfNewManagerWasDefined(State *state)
 {
     int sockfd, newsockfd, n;
     socklen_t clilen;
     char buffer[BUFFER_SIZE];
     struct sockaddr_in serv_addr, cli_addr;
-        
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) 
+
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         printLine("ERROR opening socket");
         throw ElectionException();
     }
-            
+
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(NEW_MANAGER_ANNOUNCEMENT_PORT);
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    bzero(&(serv_addr.sin_zero), 8);     
-        
-    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
+    bzero(&(serv_addr.sin_zero), 8);
+
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
         printLine("ERROR on binding");
         close(sockfd);
         throw ElectionException();
     }
-        
+
     listen(sockfd, 5);
-            
-    clilen = sizeof(struct sockaddr_in);
-    if ((newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen)) == -1) 
+
+    sigaction(SIGALRM, &(struct sigaction){handle_sigalarm});
+
+    alarm(TIME_TO_AWAIT_FOR_NEW_MANAGER_IN_SEC);
+
+    int newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+    int errno_save = errno;
+    alarm(0);
+    if (-1 == newsockfd)
     {
+        if (EINTR == errno_save)
+        {
+            printLine("accept() timed out\n");
+            // close do socket e return?
+        }
+
         printLine("ERROR on accept");
         close(sockfd);
         throw ElectionException();
     }
-        
+
     bzero(buffer, BUFFER_SIZE);
-        
+
     n = read(newsockfd, buffer, BUFFER_SIZE);
-    if (n < 0) 
+    if (n < 0)
     {
         close(newsockfd);
         close(sockfd);
@@ -134,10 +151,10 @@ bool verifyIfNewManagerWasDefined(State* state)
     return true;
 }
 
-bool shouldBeNewManager(State* state)
+bool shouldBeNewManager(State *state)
 {
     bool answer = true;
-    for (Member member : state->getManager()->getMembers()) 
+    for (Member member : state->getManager()->getMembers())
     {
         int sockfd, n, ret;
         struct sockaddr_in serv_addr;
@@ -145,14 +162,14 @@ bool shouldBeNewManager(State* state)
         char buffer[BUFFER_SIZE];
         struct timeval tv;
 
-	    server = gethostbyname(member.ipv4.c_str());
-        if (server == NULL) 
+        server = gethostbyname(member.ipv4.c_str());
+        if (server == NULL)
         {
             printLine("ERROR, no such host");
             throw ElectionException();
         }
-        
-        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) 
+
+        if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         {
             printLine("ERROR opening socket");
             throw ElectionException();
@@ -167,23 +184,23 @@ bool shouldBeNewManager(State* state)
             close(sockfd);
             throw ElectionException();
         }
-    
-        serv_addr.sin_family = AF_INET;     
-        serv_addr.sin_port = htons(ELECTION_PORT);    
+
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(ELECTION_PORT);
         serv_addr.sin_addr = *((struct in_addr *)server->h_addr);
-        bzero(&(serv_addr.sin_zero), 8);     
-	
-	    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
+        bzero(&(serv_addr.sin_zero), 8);
+
+        if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
             printLine("ERROR connecting with host " + member.ipv4);
             close(sockfd);
             break;
         }
-            
+
         std::string message = std::to_string(state->self.pid);
-    
+
         n = write(sockfd, buffer, strlen(buffer));
-        if (n < 0) 
+        if (n < 0)
         {
             printLine("ERROR writing to socket");
             close(sockfd);
@@ -191,9 +208,9 @@ bool shouldBeNewManager(State* state)
         }
 
         bzero(buffer, BUFFER_SIZE);
-	
+
         n = read(sockfd, buffer, BUFFER_SIZE);
-        if (n < 0) 
+        if (n < 0)
         {
             printLine("No message received from " + member.ipv4);
             close(sockfd);
@@ -207,51 +224,51 @@ bool shouldBeNewManager(State* state)
     return answer;
 }
 
-bool tryDoElection(State* state)
+bool tryDoElection(State *state)
 {
-    try 
+    try
     {
         state->isDoingElection = true;
         state->getManager()->fireMemberManager();
-            
+
         if (shouldBeNewManager(state))
         {
             sendNewManagerMessage(state);
             state->isDoingElection = false;
             return true;
-        } 
-        else 
+        }
+        else
         {
             bool electionDone = verifyIfNewManagerWasDefined(state);
             state->isDoingElection = false;
             return electionDone;
         }
     }
-    catch (ElectionException& e) 
-    {  
+    catch (ElectionException &e)
+    {
         state->isDoingElection = false;
         return false;
     }
 }
 
-void ElectionProcess(State* state) 
+void ElectionProcess(State *state)
 {
-    while(true) 
+    while (true)
     {
         throwExceptionIfNotAlive(state);
 
         int failToContactManagerCount = state->getFailToContactManagerCountWhenUpdated();
 
-        if (failToContactManagerCount >= FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD) 
+        if (failToContactManagerCount >= FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD)
         {
             bool electionDone = false;
-            while(!electionDone)
+            while (!electionDone)
             {
                 electionDone = tryDoElection(state);
             }
             state->resetAndUnlockFailToContactManagerCountLock();
         }
-        else 
+        else
         {
             state->unlockFailToContactManagerCountLock();
         }
