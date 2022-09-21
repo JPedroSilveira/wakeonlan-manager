@@ -2,12 +2,19 @@
 
 State::State()
 {
-    this->self = getMachineInfo();
-    this->isDoingElection = false;
-    this->manager = Manager{};
+    Member self = getMachineInfo();
+    
+    this->ipv4 = self.ipv4;
+    this->ipv6 = self.ipv6;
+    this->hostname = self.hostname;
+
     this->alive = true;
+    this->isDoingElection = false;
     this->failToContactManagerCount = 0;
 
+    this->manager = Manager{};
+    this->manager.addMemberByMessage(self.toMessage());
+    
     #ifdef __APPLE__
         this->updateFailToContactManagerCountSemaphore = dispatch_semaphore_create(0);
     #else
@@ -36,9 +43,66 @@ Member State::getManagerMember()
     throw ManagerNotFoundException();
 }
 
+Member State::getSelf()
+{
+    try 
+    {
+        return this->manager.getByIPv4(this->ipv4);
+    } 
+    catch (ItemNotFoundException& e) 
+    {        
+        try 
+        {
+            return this->manager.getByIPv6(this->ipv6);
+        } 
+        catch (ItemNotFoundException& e) 
+        {
+            return this->manager.getByHostname(this->hostname);
+        }
+    }
+}
+
 Manager* State::getManager() 
 {
     return &(this->manager);
+}
+
+void State::setIsManagerByArgs(std::vector<std::string> args)
+{
+    bool isManager = false;
+
+    for (std::string arg : args)
+    {
+        if (arg == "manager")
+        {
+            isManager = true;
+            break;
+        }
+    }
+
+    if (isManager) 
+    {
+        printInfo("Manager Machine");
+        try 
+        {
+            return this->manager.hireMemberManagerByIPv4(this->ipv4);
+        } 
+        catch (ItemNotFoundException& e) 
+        {        
+            try 
+            {
+                return this->manager.hireMemberManagerByIPv6(this->ipv6);
+            } 
+            catch (ItemNotFoundException& e) 
+            {
+                return this->manager.hireMemberManagerByHostname(this->hostname);
+            }
+        }
+    }
+    else
+    {
+        printInfo("Client Machine");
+    }
 }
 
 bool State::isAlive()
@@ -98,7 +162,6 @@ void State::resetAndUnlockFailToContactManagerCountLock()
     this->failToContactManagerCount = 0;
     pthread_mutex_unlock(&(this->changeFailToContactManagerCountLock));
 }
-
 
 void State::postFailToContactManagerCountUpdate()
 {

@@ -1,13 +1,8 @@
-#ifndef MACHINES_FINDER_HEADER
-#define MACHINES_FINDER_HEADER
+#ifndef MACHINES_LIFE_MONITOR_REPLIER_HEADER
+#define MACHINES_LIFE_MONITOR_REPLIER_HEADER
 
 /**************************************************
- * If manager: find out machines on local network
- * sending is-member packets
- * 
- * Else: answer is-member packets to let manager
- * knows that the machine want to be part of the
- * members network
+ * Receives is-awake packets and answer them
  **************************************************/
 
 #include <iostream>
@@ -20,7 +15,6 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
 #include <thread>
@@ -34,6 +28,6 @@
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesFinderProcess(State* state);
+void MachinesLifeMonitorReplierProcess(State* state);
 
 #endif

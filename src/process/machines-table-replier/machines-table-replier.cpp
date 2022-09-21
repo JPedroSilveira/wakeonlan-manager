@@ -135,7 +135,10 @@ void receiveAndSaveUpdates(State* state)
 
 void MachinesTableReplierProcess(State* state)
 {
-    if (state->self.isManager)
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
+    if (state->getSelf().isManager)
     {
         listenAndSendUpdates(state);
     }

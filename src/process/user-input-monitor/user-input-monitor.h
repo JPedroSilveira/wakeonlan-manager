@@ -18,6 +18,7 @@
 #include "../../utils/wake-on-lan-utils/wake-on-lan-utils.h"
 #include "../../entity/state/state.h"
 #include "../../exception/item-not-found-exception/item-not-found-exception.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
 void UserInputMonitorProcess(State* state);
 

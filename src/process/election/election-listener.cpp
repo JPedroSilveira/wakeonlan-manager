@@ -4,6 +4,9 @@ const int BUFFER_SIZE = 256;
 
 void ElectionListenerProcess(State* state) 
 {
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
     throwExceptionIfNotAlive(state);
 
     int sockfd, newsockfd, n;
@@ -52,7 +55,7 @@ void ElectionListenerProcess(State* state)
         std::string receivedMessage = std::string(buffer);
         int candidateProcessPID = std::stoi(receivedMessage);
 
-        if (state->self.pid > candidateProcessPID) 
+        if (state->getSelf().pid > candidateProcessPID) 
         {
             std::string answerMessage = "You should not be the manager!";
             n = write(newsockfd, answerMessage.c_str(), BUFFER_SIZE);

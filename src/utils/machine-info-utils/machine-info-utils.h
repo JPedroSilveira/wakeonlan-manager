@@ -17,8 +17,7 @@
 #include <vector>
 #include <sys/types.h>
 
-#include "../entity/member/member.h"
-#include "../utils/print-utils/print-utils.h"
+#include "../../entity/member/member.h"
 
 Member getMachineInfo();
 

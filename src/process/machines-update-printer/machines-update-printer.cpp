@@ -1,9 +1,7 @@
 #include "machines-update-printer.h"
 
-const int LISTENING_SLEEP_IN_SEC = 5;
-
 void printMembersTable(std::list<Member> members) {
-    std::string header = "Hostname \t | Endereço MAC \t | Endereço IPv4 \t | Status \n";
+    std::string header = "Hostname \t | Endereco MAC \t | Endereco IPv4 \t | Status \n";
     std::list<std::string> lines {};
     for (Member member : members)
     {
@@ -13,7 +11,7 @@ void printMembersTable(std::list<Member> members) {
     printTable(header, lines);
 }
 
-void listenAndPrintUpdates(State* state)
+void listenAndPrintMembersUpdates(State* state)
 {
     while(true)
     {
@@ -24,12 +22,17 @@ void listenAndPrintUpdates(State* state)
         printMembersTable(members);
 
         state->getManager()->unlock();
-
-        std::this_thread::sleep_for(std::chrono::seconds(LISTENING_SLEEP_IN_SEC));
     }
 }
 
 void MachinesUpdatePrinter(State* state)
 {
-    listenAndPrintUpdates(state);
+    try
+    {
+       listenAndPrintMembersUpdates(state);
+    }
+    catch (NotAliveException& e)
+    {
+        return;
+    }
 }

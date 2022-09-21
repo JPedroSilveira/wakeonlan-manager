@@ -1,11 +1,8 @@
-#ifndef MACHINES_FINDER_HEADER
-#define MACHINES_FINDER_HEADER
+#ifndef MACHINES_FINDER_REPLIER_HEADER
+#define MACHINES_FINDER_REPLIER_HEADER
 
 /**************************************************
- * If manager: find out machines on local network
- * sending is-member packets
- * 
- * Else: answer is-member packets to let manager
+ * Answer is-member packets to let manager
  * knows that the machine want to be part of the
  * members network
  **************************************************/
@@ -34,6 +31,6 @@
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesFinderProcess(State* state);
+void MachinesFinderReplierProcess(State* state);
 
 #endif

@@ -1,34 +1,49 @@
 #include "user-input-monitor.h"
 
-void UserInputMonitorProcess(State* state)
+void listenUserInputs(State* state)
 {
     while (true)
     {
         throwExceptionIfNotAlive(state);
 
-        printLine("You can enter commands while application is running");
+        printTip("You can enter commands while application is running");
         std::string command;
         std::getline(std::cin, command);
 
-        if (state->self.isManager && command.rfind("WAKEUP", 0) == 0)
+        if (state->getSelf().isManager && command.rfind("WAKEUP", 0) == 0)
         {
             std::string address = command.substr(7, command.length());
-	        printLine("Waking up " + address);
-            try {
+	        printInfo("Waking up " + address);
+            try 
+            {
                 Member member = state->getManager()->getByAddress(address);
                 sendMagicPacket(member.mac);
-            } catch (ItemNotFoundException& e) {         
-                printLine("Address not found!");
+            } 
+            catch (ItemNotFoundException& e) 
+            {         
+                printError("Address not found!");
             }
         }
-        else if (!state->self.isManager && command == "EXIT")
+        else if (!state->getSelf().isManager && command == "EXIT")
         {
-            printLine("Exiting...");
-            break;
+            printInfo("Existing from application...");
+            throw NotAliveException();
         }
         else
         {
-            printLine("Invalid command!");
+            printError("Invalid command!");
         }
+    }
+}
+
+void UserInputMonitorProcess(State* state)
+{
+    try
+    {
+        listenUserInputs(state);
+    }
+    catch (NotAliveException& e)
+    {
+        return;
     }
 }

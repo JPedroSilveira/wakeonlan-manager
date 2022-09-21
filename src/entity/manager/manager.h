@@ -12,11 +12,11 @@
 
 #include <iostream>
 #include <list>
+#include <pthread.h>
 
 #include "../member/member.h"
 #include "../../exception/item-not-found-exception/item-not-found-exception.h"
 #include "../../exception/mutex-init-failure/mutex-init-failure-exception.h"
-#include <pthread.h>
 
 class Manager
 {
@@ -33,12 +33,17 @@ private:
     int removeByIPv6(std::string ipv6);
     int removeByHostname(std::string hostname);
     void postMembersUpdate();
+    bool exists(Member member);
 
 public:
     Manager();
 
+    void hireMemberManagerByIPv4(std::string ipv4);
+    void hireMemberManagerByIPv6(std::string ipv6);
+    void hireMemberManagerByHostname(std::string hostname);
     void fireMemberManager();
 
+    void addMemberByMessage(std::string message);
     void addMembersByMessages(std::list<std::string> messages);
     void setMembersByMessages(std::list<std::string> messages);
 

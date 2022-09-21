@@ -10,6 +10,16 @@
 
 void printLine(std::string message);
 
+void printInfo(std::string message);
+
+void printTip(std::string message);
+
+void printWarning(std::string message);
+
+void printError(std::string message);
+
+void printFatalError(std::string message);
+
 void printTable(std::string header, std::list<std::string> lines);
 
 #endif

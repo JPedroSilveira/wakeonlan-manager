@@ -14,6 +14,7 @@
 #include <vector>
 #include "../member/member.h"
 #include "../manager/manager.h"
+#include "../../utils/print-utils/print-utils.h"
 #include "../../utils/machine-info-utils/machine-info-utils.h"
 #include "../../exception/manager-not-found-exception/manager-not-found-exception.h"
 
@@ -22,6 +23,9 @@ class State
 private:
     Manager manager;
     bool alive;
+    std::string ipv4;
+    std::string ipv6;
+    std::string hostname;
     int failToContactManagerCount;
     #ifdef __APPLE__
         dispatch_semaphore_t    updateFailToContactManagerCountSemaphore;
@@ -33,10 +37,11 @@ private:
     void postFailToContactManagerCountUpdate();
 public:
     bool isDoingElection;
-    Member self;
-    Member getManagerMember();
     State();
+    Member getSelf();
+    Member getManagerMember();
     Manager* getManager();
+    void setIsManagerByArgs(std::vector<std::string> args);
     void kill();
     bool isAlive();
     int getFailToContactManagerCountWhenUpdated();

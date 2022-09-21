@@ -28,6 +28,9 @@
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
 #include "../../constants/network-port-constants/network-port-constants.h"
+#include "../../constants/network-package-constants/network-package-constants.h"
+#include "../../exception/fatal-error-exception/fatal-error-exception.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
 void MachinesLifeMonitorProcess(State* state);
 

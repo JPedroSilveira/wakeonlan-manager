@@ -86,30 +86,6 @@ int Member::getStatus()
     return this->status;
 }
 
-void Member::setIsManager(std::vector<std::string> args)
-{
-    bool isManager = false;
-
-    for (std::string arg : args)
-    {
-        if (arg == "manager")
-        {
-            isManager = true;
-            break;
-        }
-    }
-
-    if (isManager) 
-    {
-        printLine("Manager Machine");
-    }
-    else
-    {
-        printLine("Client Machine");
-    }
-    this->isManager = isManager;
-}
-
 std::string Member::toTableLine() 
 {
     return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->isAwake()) + "\n";

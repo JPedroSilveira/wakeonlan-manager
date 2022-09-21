@@ -118,7 +118,10 @@ void listenManagerIsAlivePacket(State* state)
 
 void ManagerLifeMonitorProcess(State* state)
 {
-    if (state->self.isManager)
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
+    if (state->getSelf().isManager)
     {
         listenManagerIsAlivePacket(state);
     }

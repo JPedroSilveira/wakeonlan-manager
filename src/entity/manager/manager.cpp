@@ -13,6 +13,69 @@ Manager::Manager() {
     }
 }
 
+void Manager::hireMemberManagerByIPv4(std::string ipv4)
+{
+    pthread_mutex_lock(&(this->changeMembersLock));
+    bool memberExists = false;
+    std::list<Member>::iterator it;
+    for (it = this->members.begin(); it != this->members.end(); it++)
+    {
+        if (it->ipv4 == ipv4)
+        {
+            memberExists = true;
+            it->isManager = true;
+            this->postMembersUpdate();
+            break;
+        }
+    }
+    pthread_mutex_unlock(&(this->changeMembersLock));
+    if (!memberExists) {
+        throw ItemNotFoundException();
+    }
+}
+
+void Manager::hireMemberManagerByIPv6(std::string ipv6)
+{
+    pthread_mutex_lock(&(this->changeMembersLock));
+    bool memberExists = false;
+    std::list<Member>::iterator it;
+    for (it = this->members.begin(); it != this->members.end(); it++)
+    {
+        if (it->ipv6 == ipv6)
+        {
+            memberExists = true;
+            it->isManager = true;
+            this->postMembersUpdate();
+            break;
+        }
+    }
+    pthread_mutex_unlock(&(this->changeMembersLock));
+    if (!memberExists) {
+        throw ItemNotFoundException();
+    }
+}
+
+void Manager::hireMemberManagerByHostname(std::string hostname)
+{
+    pthread_mutex_lock(&(this->changeMembersLock));
+    bool memberExists = false;
+    std::list<Member>::iterator it;
+    for (it = this->members.begin(); it != this->members.end(); it++)
+    {
+        if (it->hostname == hostname)
+        {
+            memberExists = true;
+            it->isManager = true;
+            this->postMembersUpdate();
+            break;
+        }
+    }
+    pthread_mutex_unlock(&(this->changeMembersLock));
+    if (!memberExists) {
+        throw ItemNotFoundException();
+    }
+}
+
 void Manager::fireMemberManager()
 {
     pthread_mutex_lock(&(this->changeMembersLock));
@@ -159,26 +222,42 @@ int Manager::removeByHostname(std::string hostname)
     return oldSize - this->members.size();
 }
 
+void Manager::addMemberByMessage(std::string message)
+{
+    pthread_mutex_lock(&(this->changeMembersLock));
+    Member member {};
+    member.fromMessage(message);
+
+    if (!this->exists(member))
+    {
+        this->members.push_back(member);
+        this->postMembersUpdate();
+    }
+    
+    pthread_mutex_unlock(&(this->changeMembersLock));
+}
+
 void Manager::addMembersByMessages(std::list<std::string> messages)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
+
+    bool memberListUpdated = false;
 
     for (std::string message : messages) {
         Member member {};
         member.fromMessage(message);
 
-        int removedItems = this->removeByHostname(member.hostname);
-        if (removedItems < 0) {
-            this->removeByIPv4(member.hostname);
+        if (!exists(member))
+        {
+            this->members.push_back(member);
+            memberListUpdated = true;
         }
-        if (removedItems < 0) {
-            this->removeByIPv6(member.hostname);
-        }
-
-        this->members.push_back(member);
     }
 
-    this->postMembersUpdate();
+    if (memberListUpdated)
+    {
+        this->postMembersUpdate();
+    }
 
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
@@ -208,9 +287,12 @@ Member Manager::getByAddress(std::string address)
     } 
     catch (ItemNotFoundException& e) 
     {        
-        try {
+        try 
+        {
             return this->getByIPv4(address);
-        } catch (ItemNotFoundException& e) {
+        } 
+        catch (ItemNotFoundException& e) 
+        {
             return this->getByIPv6(address);
         }
     }
@@ -218,23 +300,28 @@ Member Manager::getByAddress(std::string address)
 
 Member Manager::getByIPv4(std::string ipv4) 
 {
-    for (Member member : this->members)
-    {
-        if (member.ipv4 == ipv4)
+    if (!ipv4.empty()) {
+        for (Member member : this->members)
         {
-            return member;
+            if (member.ipv4 == ipv4)
+            {
+                return member;
+            }
         }
     }
+    
     throw ItemNotFoundException();
 }
 
 Member Manager::getByIPv6(std::string ipv6)
 {
-    for (Member member : this->members)
-    {
-        if (member.ipv6 == ipv6)
+    if (!ipv6.empty()) {
+        for (Member member : this->members)
         {
-            return member;
+            if (member.ipv6 == ipv6)
+            {
+                return member;
+            }
         }
     }
     throw ItemNotFoundException();
@@ -242,11 +329,13 @@ Member Manager::getByIPv6(std::string ipv6)
 
 Member Manager::getByHostname(std::string hostname)
 {
-    for (Member member : this->members)
-    {
-        if (member.hostname == hostname)
+    if (!hostname.empty()) {
+        for (Member member : this->members)
         {
-            return member;
+            if (member.hostname == hostname)
+            {
+                return member;
+            }
         }
     }
     throw ItemNotFoundException();
@@ -282,4 +371,25 @@ void Manager::postMembersUpdate()
     #else
         sem_post(&(this->updateMembersSemaphore));
     #endif
+}
+
+bool Manager::exists(Member member)
+{
+    for (Member existentMember : this->members)
+    {
+        if (!member.ipv4.empty() && existentMember.ipv4 == member.ipv4)
+        {
+            return true;
+        }
+        else if (!member.ipv6.empty() && existentMember.ipv6 == member.ipv6)
+        {
+            return true;
+        }
+        else if (!member.hostname.empty() && existentMember.hostname == member.hostname)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }

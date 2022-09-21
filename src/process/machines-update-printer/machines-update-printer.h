@@ -13,6 +13,7 @@
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../entity/state/state.h"
 #include "../../entity/member/member.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
 void MachinesUpdatePrinter(State* state);
 

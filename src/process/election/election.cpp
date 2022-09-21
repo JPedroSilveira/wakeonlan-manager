@@ -180,7 +180,7 @@ bool shouldBeNewManager(State* state)
             break;
         }
             
-        std::string message = std::to_string(state->self.pid);
+        std::string message = std::to_string(state->getSelf().pid);
     
         n = write(sockfd, buffer, strlen(buffer));
         if (n < 0) 
@@ -236,6 +236,9 @@ bool tryDoElection(State* state)
 
 void ElectionProcess(State* state) 
 {
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
     while(true) 
     {
         throwExceptionIfNotAlive(state);
