@@ -3,11 +3,7 @@
 
 /**************************************************
  * If manager: find out machines on local network
- * sending is-member packets
- * 
- * Else: answer is-member packets to let manager
- * knows that the machine want to be part of the
- * members network
+ * sending machines finder broadcast packets
  **************************************************/
 
 #include <iostream>
@@ -30,7 +26,7 @@
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
 #include "../../constants/network-port-constants/network-port-constants.h"
-#include "../../constants/network-package-constants/network-package-constants.h"
+#include "../../constants/network-packet-constants/network-packet-constants.h"
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 

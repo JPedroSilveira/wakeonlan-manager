@@ -38,6 +38,8 @@ private:
 public:
     Manager();
 
+    void killApplication();
+
     void hireMemberManagerByIPv4(std::string ipv4);
     void hireMemberManagerByIPv6(std::string ipv6);
     void hireMemberManagerByHostname(std::string hostname);

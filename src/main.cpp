@@ -32,7 +32,8 @@
 #include "./process/machines-life-monitor/machines-life-monitor.h"
 #include "./process/machines-life-monitor/machines-life-monitor-replier.h"
 #include "./process/machines-update-printer/machines-update-printer.h"
-#include "./process/machines-table-replier/machines-table-replier.h"
+#include "./process/machines-table-replicator/machines-table-replicator-sender.h"
+#include "./process/machines-table-replicator/machines-table-replicator-receiver.h"
 #include "./process/manager-life-monitor/manager-life-monitor.h"
 #include "./process/election/election-listener.h"
 
@@ -60,8 +61,10 @@ int main(int argc, char *argv[])
     Process machinesUpdatePrinterProcess{MachinesUpdatePrinter};
     machinesUpdatePrinterProcess.start(&state);
 
-    // Process machinesTableReplierProcess{MachinesTableReplierProcess};
-    // machinesTableReplierProcess.start(&state);
+    Process machinesTableReplicatorReceiverProcess{MachinesTableReplicatorReceiverProcess};
+    machinesTableReplicatorReceiverProcess.start(&state);
+    Process machinesTableReplicatorSenderProcess{MachinesTableReplicatorSenderProcess};
+    machinesTableReplicatorSenderProcess.start(&state); 
 
     // Process managerLifeMonitorProcess{ManagerLifeMonitorProcess};
     // managerLifeMonitorProcess.start(&state);
@@ -72,14 +75,16 @@ int main(int argc, char *argv[])
     do
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
-    } while (
+    } 
+    while (
         userInputMonitorProcess.getStatus() != std::future_status::ready
         && machinesLifeMonitorReplierProcess.getStatus() != std::future_status::ready
         && machinesLifeMonitorProcess.getStatus() != std::future_status::ready
         && machinesFinderReplierProcess.getStatus() != std::future_status::ready
         && machinesFinderProcess.getStatus() != std::future_status::ready
         && machinesUpdatePrinterProcess.getStatus() != std::future_status::ready 
-        // && machinesTableReplierProcess.getStatus() != std::future_status::ready 
+        && machinesTableReplicatorReceiverProcess.getStatus() != std::future_status::ready
+        && machinesTableReplicatorSenderProcess.getStatus() != std::future_status::ready 
         // && managerLifeMonitorProcess.getStatus() != std::future_status::ready 
         // && electionListener.getStatus() != std::future_status::ready
     );

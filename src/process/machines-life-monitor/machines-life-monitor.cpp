@@ -32,7 +32,6 @@ void sendMonitoringPackets(State* state)
         server = gethostbyname(member.ipv4.c_str());
         if (server == NULL) {
             printWarning("Fail to find host for " + member.ipv4 + " while sending life monitor packet");
-            close(sockfd);
             continue;
         }	
             

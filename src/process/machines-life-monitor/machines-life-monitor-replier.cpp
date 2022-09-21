@@ -7,7 +7,8 @@ void receiveLifeMonitorPackets(State* state)
 	struct sockaddr_in serv_addr, cli_addr;
 	char buffer[MACHINE_LIFE_MONITOR_PACKAGE_SIZE];
 		
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
+    {
         printFatalError("Fail to open socket to receive life monitor packets");
         throw FatalErrorException();
     }
@@ -17,8 +18,10 @@ void receiveLifeMonitorPackets(State* state)
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	bzero(&(serv_addr.sin_zero), 8);    
 	 
-    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(struct sockaddr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(struct sockaddr)) < 0) 
+    {
         printFatalError("Fail to bind socket to receive life monitor packets");
+        close(sockfd);
         throw FatalErrorException();
     }
 		

@@ -87,7 +87,8 @@ void sendBroadcastPacketMock(State* state)
 {
     std::list<std::string> memberMessages {};
 
-    memberMessages.push_back("1,192.168.0.50,e3:23:12:12:02:ee,jpedrohost,aa:bb:cc:dd:ee:ff,192.168.0.255,0");
+    memberMessages.push_back("1,192.168.0.50,e3:23:12:12:02:ee,mockhost1,aa:bb:cc:dd:ee:ff,192.168.0.255,0,1");
+    memberMessages.push_back("1,192.168.0.49,e2:23:12:12:02:ee,mockhost2,bb:cc:dd:ee:ff::gg,192.168.0.255,0,2");
     state->getManager()->addMembersByMessages(memberMessages);
 }
 
@@ -100,7 +101,7 @@ void MachinesFinderProcess(State* state)
             throwExceptionIfNotAlive(state);
             if (state->getSelf().isManager)
             {
-                sendBroadcastPacket(state);
+                sendBroadcastPacketMock(state);
             }
             std::this_thread::sleep_for(std::chrono::seconds(BROADCAST_SLEEP_TIME_IN_SEC));
         } 

@@ -2,7 +2,8 @@
 #define MACHINES_LIFE_MONITOR_REPLIER_HEADER
 
 /**************************************************
- * Receives is-awake packets and answer them
+ * Receives life monitor packets packets 
+ * and answer them
  **************************************************/
 
 #include <iostream>
@@ -24,7 +25,7 @@
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
 #include "../../constants/network-port-constants/network-port-constants.h"
-#include "../../constants/network-package-constants/network-package-constants.h"
+#include "../../constants/network-packet-constants/network-packet-constants.h"
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 

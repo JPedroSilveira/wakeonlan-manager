@@ -393,3 +393,8 @@ bool Manager::exists(Member member)
 
     return false;
 }
+
+void Manager::killApplication()
+{
+    this->postMembersUpdate();
+}

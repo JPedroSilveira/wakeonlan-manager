@@ -113,6 +113,8 @@ bool State::isAlive()
 void State::kill()
 {
     this->alive = false;
+    this->manager.killApplication();
+    this->postFailToContactManagerCountUpdate();
 }
 
 int State::getFailToContactManagerCountWhenUpdated()

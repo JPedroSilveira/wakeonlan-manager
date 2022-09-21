@@ -1,13 +1,8 @@
-#ifndef MACHINES_TABLE_REPLIER_HEADER
-#define MACHINES_TABLE_REPLIER_HEADER
+#ifndef MACHINES_TABLE_REPLICATOR_RECEIVER_HEADER
+#define MACHINES_TABLE_REPLICATOR_RECEIVER_HEADER
 
 /**************************************************
- * If manager: send members-replier packets 
- * to all machines with the updated members table, 
- * allowing this information to be replicated in 
- * all of members
- * 
- * Else: receives members-replier packets and 
+ * Receives machines table update packets and 
  * save the updated list of member on application 
  * state
  **************************************************/
@@ -35,7 +30,10 @@
 #include "../../entity/state/state.h"
 #include "../../entity/member/member.h"
 #include "../../constants/network-port-constants/network-port-constants.h"
+#include "../../constants/network-packet-constants/network-packet-constants.h"
+#include "../../exception/fatal-error-exception/fatal-error-exception.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesTableReplierProcess(State* state);
+void MachinesTableReplicatorReceiverProcess(State* state);
 
 #endif
