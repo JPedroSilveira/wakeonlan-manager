@@ -1,8 +1,5 @@
 #include "manager-life-monitor-listener.h"
 
-const int CONNECTION_TIMEOUT_IN_SEC = 5;
-const int MONITORING_SLEEP_IN_SEC = 10;
-
 void listenManagerLifeMonitorPackets(State* state)
 {
     int sockfd, n;

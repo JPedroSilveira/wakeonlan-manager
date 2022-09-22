@@ -1,7 +1,7 @@
 #include "machines-update-printer.h"
 
 void printMembersTable(std::list<Member> members) {
-    std::string header = "Hostname \t | Endereco MAC \t | Endereco IPv4 \t | Status \t | Manager \t \n";
+    std::string header = "Hostname     \t | Endereco MAC     \t | Endereco IPv4      \t | Status     \t | Manager     \t \n";
     std::list<std::string> lines {};
     for (Member member : members)
     {
