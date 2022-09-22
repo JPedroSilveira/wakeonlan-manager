@@ -1,7 +1,7 @@
 #include "machines-finder.h"
 
 const int BROADCAST_AWAITING_TIME_IN_SEC = 10;
-const int BROADCAST_SLEEP_TIME_IN_SEC = 30;
+const int BROADCAST_SLEEP_TIME_IN_SEC = 2;
 const int BROADCAST_TIMEOUT_IN_SEC = 10;
 
 void sendBroadcastPacket(State* state)
@@ -47,7 +47,7 @@ void sendBroadcastPacket(State* state)
 
     // Set the broadcast IP address
     // TODO[LAB]: IF NECESSARY SET BROADCAST MANUALLY
-    inet_pton(AF_INET, state->getSelf().broadcast.c_str(), &broadcastAddr.sin_addr); 
+    inet_pton(AF_INET, "10.67.104.255", &broadcastAddr.sin_addr); 
     broadcastAddr.sin_port = htons(MACHINE_FINDER_PORT);                                   
 
     // Send the broadcast request
@@ -70,6 +70,7 @@ void sendBroadcastPacket(State* state)
         n = recvfrom(sockfd, buffer, MACHINE_FINDER_PACKET_SIZE, 0, (struct sockaddr *)&cli_addr, &clilen);
         if (n > 0)
         {
+	    printDebug("New member received");
             memberMessages.push_back(std::string(buffer));
         }
 

@@ -39,7 +39,7 @@ bool doElectionByPid(State* state)
 
         printDebug("Sending election packet for " + member.ipv4);
 
-	    server = gethostbyname(member.ipv4.c_str());
+	server = gethostbyname(member.ipv4.c_str());
         if (server == NULL) 
         {
             printWarning("Fail to get hostname for " + member.ipv4 + " during election, so it will be ignored");
@@ -69,7 +69,7 @@ bool doElectionByPid(State* state)
         bzero(buffer, ELECTION_VOTE_PACKET_SIZE);
 	
         n = read(sockfd, buffer, ELECTION_VOTE_PACKET_SIZE);
-        if (n < 0) 
+        if (n <= 0) 
         {
             printDebug("No response received from " + member.ipv4 + " during election");
         }
