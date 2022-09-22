@@ -47,7 +47,7 @@ void sendBroadcastPacket(State* state)
 
     // Set the broadcast IP address
     // TODO[LAB]: IF NECESSARY SET BROADCAST MANUALLY
-    inet_pton(AF_INET, "10.67.104.255", &broadcastAddr.sin_addr); 
+    inet_pton(AF_INET, state->getSelf().broadcast.c_str(), &broadcastAddr.sin_addr); 
     broadcastAddr.sin_port = htons(MACHINE_FINDER_PORT);                                   
 
     // Send the broadcast request
