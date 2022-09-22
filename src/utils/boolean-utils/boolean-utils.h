@@ -2,7 +2,7 @@
 #define BOOLEAN_UTILS_HEADER
 
 /**************************************************
- * Utilitary functions
+ * Utilitary methods to work with booleans
  **************************************************/
 
 #include <iostream>

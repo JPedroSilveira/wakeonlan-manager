@@ -11,11 +11,17 @@ Member::Member()
     this->mac = "";
     this->broadcast = "";
     this->isManager = false;
+    this->pid = 0;
 }
 
 bool Member::isAwake()
 {
     return this->status == 1;
+}
+
+bool Member::isEqual(Member member)
+{
+    return member.toMessage() == this->toMessage();
 }
 
 void Member::setMemberAsAwake()
@@ -37,7 +43,8 @@ std::string Member::toMessage()
         .append(this->hostname).append(SEPARATOR)
         .append(this->mac).append(SEPARATOR)
         .append(this->broadcast).append(SEPARATOR)
-        .append(booleanToString(this->isManager)).append(SEPARATOR);
+        .append(booleanToString(this->isManager)).append(SEPARATOR)
+        .append(std::to_string(this->pid)).append(SEPARATOR);
     return message;
 }
 
@@ -73,6 +80,10 @@ void Member::fromMessage(std::string message)
     std::getline(stream, attribute, SEPARATOR.at(0));
     attribute.erase(std::remove(attribute.begin(), attribute.end(), '\n'), attribute.end());
     this->isManager = stringToBoolean(attribute);
+
+    std::getline(stream, attribute, SEPARATOR.at(0));
+    attribute.erase(std::remove(attribute.begin(), attribute.end(), '\n'), attribute.end());
+    this->pid = std::stoi(attribute);
 }
 
 int Member::getStatus() 
@@ -80,31 +91,7 @@ int Member::getStatus()
     return this->status;
 }
 
-void Member::setIsManager(std::vector<std::string> args)
-{
-    bool isManager = false;
-
-    for (std::string arg : args)
-    {
-        if (arg == "manager")
-        {
-            isManager = true;
-            break;
-        }
-    }
-
-    if (isManager) 
-    {
-        printLine("Manager Machine");
-    }
-    else
-    {
-        printLine("Client Machine");
-    }
-    this->isManager = isManager;
-}
-
 std::string Member::toTableLine() 
 {
-    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->isAwake()) + "\n";
+    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->isAwake()) + + " \t | " + (this->isManager ? "true" : "false") + "\t \n";
 }

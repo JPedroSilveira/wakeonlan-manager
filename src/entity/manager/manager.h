@@ -12,11 +12,11 @@
 
 #include <iostream>
 #include <list>
+#include <pthread.h>
 
 #include "../member/member.h"
-#include "../../exception/item-not-found/item-not-found-exception.h"
+#include "../../exception/item-not-found-exception/item-not-found-exception.h"
 #include "../../exception/mutex-init-failure/mutex-init-failure-exception.h"
-#include <pthread.h>
 
 class Manager
 {
@@ -33,11 +33,23 @@ private:
     int removeByIPv6(std::string ipv6);
     int removeByHostname(std::string hostname);
     void postMembersUpdate();
+    bool exists(Member member);
+    Member getExistentMember(Member member);
 
 public:
     Manager();
 
+    void killApplication();
+
+    void hireMemberManager(Member member);
+    void hireMemberManagerByIPv4(std::string ipv4);
+    void hireMemberManagerByIPv6(std::string ipv6);
+    void hireMemberManagerByHostname(std::string hostname);
+    void fireMemberManager();
+
+    void addMemberByMessage(std::string message);
     void addMembersByMessages(std::list<std::string> messages);
+    void updateMembersByMessages(std::list<std::string> messages);
 
     void updateToAwakeByIPv4(std::string ipv4);
     void updateToAwakeByIPv6(std::string ipv6);
@@ -55,7 +67,7 @@ public:
     std::list<Member> getMembers();
 
     std::list<Member> getMembersWhenUpdatedAndLock();
-    void unlock();
+    void unlockMembersUpdates();
 };
 
 #endif
