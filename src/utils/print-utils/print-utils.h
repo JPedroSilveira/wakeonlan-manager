@@ -20,6 +20,8 @@ void printError(std::string message);
 
 void printFatalError(std::string message);
 
+void printDebug(std::string message);
+
 void printTable(std::string header, std::list<std::string> lines);
 
 #endif

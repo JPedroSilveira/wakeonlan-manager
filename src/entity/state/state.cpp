@@ -9,7 +9,7 @@ State::State()
     this->hostname = self.hostname;
 
     this->alive = true;
-    this->isDoingElection = false;
+    this->electionStarted = false;
     this->failToContactManagerCount = 0;
 
     this->manager = Manager{};
@@ -17,8 +17,10 @@ State::State()
     
     #ifdef __APPLE__
         this->updateFailToContactManagerCountSemaphore = dispatch_semaphore_create(0);
+        this->electionStartedSemaphore = dispatch_semaphore_create(0);
     #else
         sem_init(&(this->updateFailToContactManagerCountSemaphore), 0, 0);
+        sem_init(&(this->electionStartedSemaphore), 0, 0);
     #endif
 
     int failure = pthread_mutex_init(&(this->changeFailToContactManagerCountLock), NULL);
@@ -26,7 +28,7 @@ State::State()
         throw MutexInitFailureException();
     }
     
-    failure = pthread_mutex_init(&(this->isDoingElectionLock), NULL);
+    failure = pthread_mutex_init(&(this->electionStartedLock), NULL);
     if (failure != 0) {
         throw MutexInitFailureException();
     }
@@ -117,7 +119,7 @@ void State::kill()
     this->postFailToContactManagerCountUpdate();
 }
 
-int State::getFailToContactManagerCountWhenUpdated()
+int State::failToContactManagerCountListener()
 {
     #ifdef __APPLE__
         dispatch_semaphore_wait(this->updateFailToContactManagerCountSemaphore, DISPATCH_TIME_FOREVER);
@@ -172,4 +174,40 @@ void State::postFailToContactManagerCountUpdate()
     #else
         sem_post(&(this->updateFailToContactManagerCountSemaphore));
     #endif
+}
+
+void State::tryStartElection()
+{
+    pthread_mutex_lock(&(this->electionStartedLock));
+    if (!this->electionStarted) {
+        this->electionStarted = true;
+        printDebug("Election started");
+        #ifdef __APPLE__
+            dispatch_semaphore_signal(this->electionStartedSemaphore);
+        #else
+            sem_post(&(this->electionStartedSemaphore));
+        #endif
+    }
+    pthread_mutex_unlock(&(this->electionStartedLock));
+}
+
+void State::awaitForElectionStart()
+{
+    #ifdef __APPLE__
+        dispatch_semaphore_wait(this->electionStartedSemaphore, DISPATCH_TIME_FOREVER);
+    #else
+        sem_wait(&(this->electionStartedSemaphore));
+    #endif
+}
+
+void State::finishElection()
+{
+    pthread_mutex_lock(&(this->electionStartedLock));
+    this->electionStarted = false;
+    pthread_mutex_unlock(&(this->electionStartedLock));
+}
+
+bool State::isDoingElection()
+{
+    return electionStarted;
 }

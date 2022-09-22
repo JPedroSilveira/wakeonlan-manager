@@ -19,6 +19,11 @@ bool Member::isAwake()
     return this->status == 1;
 }
 
+bool Member::isEqual(Member member)
+{
+    return member.toMessage() == this->toMessage();
+}
+
 void Member::setMemberAsAwake()
 {
     this->status = 1;
@@ -88,5 +93,5 @@ int Member::getStatus()
 
 std::string Member::toTableLine() 
 {
-    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->isAwake()) + "\n";
+    return this->hostname + " \t | " + this->mac + " \t | " +  this->ipv4 + " \t | " + std::to_string(this->isAwake()) + + " \t | " + (this->isManager ? "true" : "false") + "\t \n";
 }

@@ -262,19 +262,38 @@ void Manager::addMembersByMessages(std::list<std::string> messages)
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
 
-void Manager::setMembersByMessages(std::list<std::string> messages)
+void Manager::updateMembersByMessages(std::list<std::string> messages)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
 
-    this->members.clear();
+    bool memberListWasUpdated = false;
 
     for (std::string message : messages) {
-        Member member {};
-        member.fromMessage(message);
-        this->members.push_back(member);
+        Member updatedMember {};
+        updatedMember.fromMessage(message);
+        if (this->exists(updatedMember)) {
+            Member existentMember = this->getExistentMember(updatedMember);
+            if (existentMember.isEqual(updatedMember)) {
+                continue;
+            }
+        }
+        
+        if (this->removeByIPv4(updatedMember.ipv4) <= 0) 
+        {
+            if (this->removeByIPv6(updatedMember.ipv6) <= 0) 
+            {
+                this->removeByHostname(updatedMember.hostname);
+            }
+        }
+
+        this->members.push_back(updatedMember);
+
+        memberListWasUpdated = true;
     }
 
-    this->postMembersUpdate();
+    if (memberListWasUpdated) {
+        this->postMembersUpdate();
+    }
 
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
@@ -359,7 +378,7 @@ std::list<Member> Manager::getMembersWhenUpdatedAndLock()
     return this->members;
 }
 
-void Manager::unlock()
+void Manager::unlockMembersUpdates()
 {
     pthread_mutex_unlock(&(this->changeMembersLock));
 }
@@ -392,6 +411,27 @@ bool Manager::exists(Member member)
     }
 
     return false;
+}
+
+Member Manager::getExistentMember(Member member)
+{
+    for (Member existentMember : this->members)
+    {
+        if (!member.ipv4.empty() && existentMember.ipv4 == member.ipv4)
+        {
+            return existentMember;
+        }
+        else if (!member.ipv6.empty() && existentMember.ipv6 == member.ipv6)
+        {
+            return existentMember;
+        }
+        else if (!member.hostname.empty() && existentMember.hostname == member.hostname)
+        {
+            return existentMember;
+        }
+    }
+
+    throw ItemNotFoundException();
 }
 
 void Manager::killApplication()

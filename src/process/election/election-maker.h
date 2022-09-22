@@ -1,9 +1,8 @@
-#ifndef ELECTION_HEADER
-#define ELECTION_HEADER
+#ifndef ELECTION_MAKER_HEADER
+#define ELECTION_MAKER_HEADER
 
 /**************************************************
- * Starts an election when the number of erros
- * trying to contact the manager reachs an threshold
+ * Make an election following the bully algorithm 
  **************************************************/
 
 #include <iostream>
@@ -27,7 +26,9 @@
 #include "../../constants/network-port-constants/network-port-constants.h"
 #include "../../constants/election-constants/election-constants.h"
 #include "../../exception/election-exception/election-exception.h"
+#include "../../exception/fatal-error-exception/fatal-error-exception.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
-void ElectionProcess(State* state);
+void ElectionMakerProcess(State* state);
 
 #endif

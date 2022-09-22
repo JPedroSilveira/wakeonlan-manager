@@ -1,6 +1,5 @@
 #include "manager-life-monitor-sender.h"
 
-const int IS_MANAGER_SLEEP_IN_SEC = 2;
 const int CONNECTION_TIMEOUT_IN_SEC = 2;
 const int MONITORING_SLEEP_IN_SEC = 2;
 
@@ -31,9 +30,10 @@ void sendManagerLifeMonitorPacket(State* state)
     while(true) {
         throwExceptionIfNotAlive(state);
 
-        if (state->getSelf().isManager)
+        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
+
+        if (state->getSelf().isManager || state->isDoingElection())
         {
-            std::this_thread::sleep_for(std::chrono::seconds(IS_MANAGER_SLEEP_IN_SEC));
             continue;
         }
 
@@ -68,7 +68,6 @@ void sendManagerLifeMonitorPacket(State* state)
                     printWarning("Fail to receive manager life monitor packet for manager " + managerMember.ipv4);
                     state->increaseFailToContactManagerCount();
                 } else {
-                    printInfo("Received manager is alive response");
                     state->resetFailToContactManagerCount();
                 }
             }
@@ -77,8 +76,6 @@ void sendManagerLifeMonitorPacket(State* state)
         {
             printWarning("Manager not found while sending manager life monitor packet");
         }
- 
-        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
     }
 }
 

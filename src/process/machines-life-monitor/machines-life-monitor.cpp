@@ -27,54 +27,67 @@ void sendMonitoringPackets(State* state)
         throw FatalErrorException();
     }
 
-    for (Member member : state->getManager()->getMembers()) 
+    while(true)
     {
-        server = gethostbyname(member.ipv4.c_str());
-        if (server == NULL) {
-            printWarning("Fail to find host for " + member.ipv4 + " while sending life monitor packet");
-            continue;
-        }	
-            
-        serv_addr.sin_family = AF_INET;     
-        serv_addr.sin_port = htons(MACHINE_LIFE_MONITOR_PORT);    
-        serv_addr.sin_addr = *((struct in_addr *)server->h_addr);
-        bzero(&(serv_addr.sin_zero), 8);  
+        throwExceptionIfNotAlive(state);
 
-        std::string message = "Are you alive?";
-
-        n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
-        if (n < 0) 
+        if (state->getSelf().isManager)
         {
-            printWarning("Fail to send life monitor packet for " + member.ipv4);
-        }
-        else
-        {
-            length = sizeof(struct sockaddr_in);
+            for (Member member : state->getManager()->getMembers()) 
+            {
+                server = gethostbyname(member.ipv4.c_str());
+                if (server == NULL) {
+                    printWarning("Fail to find host for " + member.ipv4 + " while sending life monitor packet");
+                    continue;
+                }	
+                    
+                serv_addr.sin_family = AF_INET;     
+                serv_addr.sin_port = htons(MACHINE_LIFE_MONITOR_PORT);    
+                serv_addr.sin_addr = *((struct in_addr *)server->h_addr);
+                bzero(&(serv_addr.sin_zero), 8);  
 
-            n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKET_SIZE, 0, (struct sockaddr *) &from, &length);
-            if (n < 0) {
-                state->getManager()->updateToSleepingByIPv4(member.ipv4);
-            } else {
-                state->getManager()->updateToAwakeByIPv4(member.ipv4);
+                std::string message = "Are you alive?";
+
+                n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
+                if (n < 0) 
+                {
+                    printWarning("Fail to send life monitor packet for " + member.ipv4);
+                }
+                else
+                {
+                    length = sizeof(struct sockaddr_in);
+
+                    n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKET_SIZE, 0, (struct sockaddr *) &from, &length);
+                    if (n < 0) {
+                        state->getManager()->updateToSleepingByIPv4(member.ipv4);
+                    } else {
+                        state->getManager()->updateToAwakeByIPv4(member.ipv4);
+                    }
+                }
             }
         }
-    }
 
-    close(sockfd);
+        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
+    }
 }
 
 void sendMonitoringPacketsMock(State* state) 
 {
-    for (Member member : state->getManager()->getMembers()) 
+    while(true)
     {
-        if (member.getStatus() == 1) 
+        throwExceptionIfNotAlive(state);
+        for (Member member : state->getManager()->getMembers()) 
         {
-            state->getManager()->updateToSleepingByIPv4(member.ipv4);
+            if (member.getStatus() == 1) 
+            {
+                state->getManager()->updateToSleepingByIPv4(member.ipv4);
+            }
+            else
+            {
+                state->getManager()->updateToAwakeByIPv4(member.ipv4);
+            }
         }
-        else
-        {
-            state->getManager()->updateToAwakeByIPv4(member.ipv4);
-        }
+        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
     }
 }
 
@@ -82,18 +95,8 @@ void MachinesLifeMonitorProcess(State* state)
 {
     try 
     {
-        while(true)
-        {
-            throwExceptionIfNotAlive(state);
-
-            if (state->getSelf().isManager)
-            {
-                sendMonitoringPackets(state);
-            }
-
-            std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
-        }
-    } 
+        sendMonitoringPackets(state);
+    }
     catch (FatalErrorException& e) 
     {
         return;

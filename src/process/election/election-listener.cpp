@@ -64,7 +64,7 @@ void ElectionListenerProcess(State* state)
                 printLine("ERROR writing to socket");
                 break;
             }
-            if (!state->isDoingElection) {
+            if (!state->isDoingElection()) {
                 state->increaseFailtToContactManagerCountBy(FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD);
             }
         }

@@ -36,7 +36,8 @@
 #include "./process/machines-table-replicator/machines-table-replicator-receiver.h"
 #include "./process/manager-life-monitor/manager-life-monitor-sender.h"
 #include "./process/manager-life-monitor/manager-life-monitor-listener.h"
-#include "./process/election/election-listener.h"
+#include "./process/election/election-maker.h"
+#include "./process/election/election-starter.h"
 
 State state = State();
 
@@ -72,8 +73,10 @@ int main(int argc, char *argv[])
     Process managerLifeMonitorSenderProcess{ManagerLifeMonitorSenderProcess};
     managerLifeMonitorSenderProcess.start(&state);
 
-    // Process electionListener{ElectionListenerProcess};
-    // electionListener.start(&state);
+    Process electionMakerProcess{ElectionMakerProcess};
+    electionMakerProcess.start(&state);
+    Process electionStarterProcess{ElectionStarterProcess};
+    electionStarterProcess.start(&state);
 
     do
     {
@@ -90,7 +93,8 @@ int main(int argc, char *argv[])
         && machinesTableReplicatorSenderProcess.getStatus() != std::future_status::ready 
         && managerLifeMonitorListenerProcess.getStatus() != std::future_status::ready
         && managerLifeMonitorSenderProcess.getStatus() != std::future_status::ready 
-        // && electionListener.getStatus() != std::future_status::ready
+        && electionMakerProcess.getStatus() != std::future_status::ready
+        && electionStarterProcess.getStatus() != std::future_status::ready
     );
 
     state.kill();

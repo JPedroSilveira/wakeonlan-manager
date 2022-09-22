@@ -23,20 +23,22 @@ class State
 private:
     Manager manager;
     bool alive;
+    bool electionStarted;
     std::string ipv4;
     std::string ipv6;
     std::string hostname;
     int failToContactManagerCount;
     #ifdef __APPLE__
-        dispatch_semaphore_t    updateFailToContactManagerCountSemaphore;
+        dispatch_semaphore_t updateFailToContactManagerCountSemaphore;
+        dispatch_semaphore_t electionStartedSemaphore;
     #else
-        sem_t                   updateFailToContactManagerCountSemaphore;
+        sem_t updateFailToContactManagerCountSemaphore;
+        sem_t electionStartedSemaphore;
     #endif
     pthread_mutex_t changeFailToContactManagerCountLock;
-    pthread_mutex_t isDoingElectionLock;
+    pthread_mutex_t electionStartedLock;
     void postFailToContactManagerCountUpdate();
 public:
-    bool isDoingElection;
     State();
     Member getSelf();
     Member getManagerMember();
@@ -44,12 +46,16 @@ public:
     void setIsManagerByArgs(std::vector<std::string> args);
     void kill();
     bool isAlive();
-    int getFailToContactManagerCountWhenUpdated();
+    int failToContactManagerCountListener();
     void increaseFailToContactManagerCount();
     void increaseFailtToContactManagerCountBy(int quantity);
     void resetFailToContactManagerCount();
     void unlockFailToContactManagerCountLock();
     void resetAndUnlockFailToContactManagerCountLock();
+    void tryStartElection();
+    void awaitForElectionStart();
+    void finishElection();
+    bool isDoingElection();
 };
 
 #endif

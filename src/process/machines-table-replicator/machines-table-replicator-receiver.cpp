@@ -61,13 +61,13 @@ void receiveAndSaveUpdates(State* state)
                 }
             }
 
-            for (std::string message : membersMessages) {
-                Member member {};
-                member.fromMessage(message);
-                // printInfo("Received: " + member.ipv4 + " | " + std::to_string(member.getStatus()) + " | " + (member.isManager ? "true" : "false"));
-            }
+            // for (std::string message : membersMessages) {
+            //     Member member {};
+            //     member.fromMessage(message);
+            //     printDebug("Received: " + member.ipv4);
+            // }
 
-            state->getManager()->setMembersByMessages(membersMessages); 
+            state->getManager()->updateMembersByMessages(membersMessages); 
         }
     }
 }

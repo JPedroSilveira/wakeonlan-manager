@@ -1,4 +1,4 @@
-#include "election.h"
+#include "election-maker.h"
 
 const int BUFFER_SIZE = 256;
 const int MONITORING_SLEEP_IN_SEC = 2;
@@ -211,54 +211,42 @@ bool tryDoElection(State* state)
 {
     try 
     {
-        state->isDoingElection = true;
+        //state->isDoingElection = true;
         state->getManager()->fireMemberManager();
             
         if (shouldBeNewManager(state))
         {
             sendNewManagerMessage(state);
-            state->isDoingElection = false;
+            //state->isDoingElection = false;
             return true;
         } 
         else 
         {
             bool electionDone = verifyIfNewManagerWasDefined(state);
-            state->isDoingElection = false;
+            //state->isDoingElection = false;
             return electionDone;
         }
     }
     catch (ElectionException& e) 
     {  
-        state->isDoingElection = false;
+        //state->isDoingElection = false;
         return false;
     }
 }
 
-void ElectionProcess(State* state) 
+void ElectionMakerProcess(State* state) 
 {
-    while(true) {
-        std::this_thread::sleep_for(std::chrono::seconds(10));
-    }
-    while(true) 
+    try
     {
-        throwExceptionIfNotAlive(state);
-
-        int failToContactManagerCount = state->getFailToContactManagerCountWhenUpdated();
-
-        if (failToContactManagerCount >= FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD) 
-        {
-            bool electionDone = false;
-            while(!electionDone)
-            {
-                electionDone = tryDoElection(state);
-            }
-            state->resetAndUnlockFailToContactManagerCountLock();
-        }
-        else 
-        {
-            state->unlockFailToContactManagerCountLock();
-        }
-
-        std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
+        state->awaitForElectionStart();
+        printDebug("Election maker started");
+    }
+    catch (FatalErrorException& e) 
+    {
+        return;
+    }
+    catch (NotAliveException& e)
+    {
+        return;
     }
 }

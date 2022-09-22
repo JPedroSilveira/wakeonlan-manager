@@ -33,6 +33,7 @@ public:
     Member();
     int getStatus();
     bool isAwake();
+    bool isEqual(Member member);
     void setMemberAsAwake();
     void setMemberAsSleeping();
     std::string toMessage();

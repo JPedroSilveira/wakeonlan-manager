@@ -2,11 +2,10 @@
 #define MANAGER_LIFE_MONITOR_SENDER_HEADER
 
 /**************************************************
- * If manager: answer manager-is-alive packets
- * 
- * Else: send manager-is-alive-packets and saves 
- * how many times the manager did not respond 
- * to the request
+ * Send manager life monitor packets and
+ * increase the counter of how many times
+ * manager did not respond to the request
+ * in sequence
  **************************************************/
 
 #include <netdb.h>

@@ -1,10 +1,10 @@
 #include "machines-table-replicator-sender.h"
 
-const int IS_NOT_MANAGER_SLEEP_IN_SEC = 2;
+const int SEND_UPDATES_DELAY_IN_SEC = 5;
 const int SOCKET_TIMEOUT_IN_SEC = 1;
 const std::string LIST_SEPARATOR = ";";
 
-void listenAndSendUpdates(State* state)
+void sendUpdatesConstantly(State* state)
 {
     int sockfd, n, ret;
     unsigned int length;
@@ -32,13 +32,14 @@ void listenAndSendUpdates(State* state)
     while(true) {
         throwExceptionIfNotAlive(state);
 
+        std::this_thread::sleep_for(std::chrono::seconds(SEND_UPDATES_DELAY_IN_SEC));
+
         if (!state->getSelf().isManager)
         {
-            std::this_thread::sleep_for(std::chrono::seconds(IS_NOT_MANAGER_SLEEP_IN_SEC));
             continue;
         }
 
-        std::list<Member> members = state->getManager()->getMembersWhenUpdatedAndLock();
+        std::list<Member> members = state->getManager()->getMembers();
 
         std::string message = {};
 
@@ -80,8 +81,6 @@ void listenAndSendUpdates(State* state)
                 }
             }
         }
-
-        state->getManager()->unlock();
     }  
 }
 
@@ -89,7 +88,7 @@ void MachinesTableReplicatorSenderProcess(State* state)
 {
     try 
     {
-        listenAndSendUpdates(state);
+        sendUpdatesConstantly(state);
     }
     catch (FatalErrorException& e) 
     {

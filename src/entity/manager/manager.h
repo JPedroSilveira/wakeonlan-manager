@@ -34,6 +34,7 @@ private:
     int removeByHostname(std::string hostname);
     void postMembersUpdate();
     bool exists(Member member);
+    Member getExistentMember(Member member);
 
 public:
     Manager();
@@ -47,7 +48,7 @@ public:
 
     void addMemberByMessage(std::string message);
     void addMembersByMessages(std::list<std::string> messages);
-    void setMembersByMessages(std::list<std::string> messages);
+    void updateMembersByMessages(std::list<std::string> messages);
 
     void updateToAwakeByIPv4(std::string ipv4);
     void updateToAwakeByIPv6(std::string ipv6);
@@ -65,7 +66,7 @@ public:
     std::list<Member> getMembers();
 
     std::list<Member> getMembersWhenUpdatedAndLock();
-    void unlock();
+    void unlockMembersUpdates();
 };
 
 #endif
