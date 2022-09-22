@@ -37,10 +37,10 @@ std::vector<std::string> getAddresses()
         std::string interfaceName = std::string(ptr_entry->ifa_name);
 
         // TODO[LAB]: REMOVE TO RUN ON LABS
-        // bool isWiredInterface = interfaceName.rfind("eth", 0) == 0;
-        // if (!isWiredInterface) {
-        //     continue;
-        // }
+        bool isWiredInterface = interfaceName.rfind("eth", 0) == 0;
+        if (!isWiredInterface) {
+        	continue;
+        }
 
         std::string ipaddress_human_readable_form;
         std::string netmask_human_readable_form;
