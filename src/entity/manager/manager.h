@@ -35,15 +35,16 @@ private:
     void postMembersUpdate();
     bool exists(Member member);
     Member getExistentMember(Member member);
+    void hireMemberManagerByIPv4(std::string ipv4);
+    void hireMemberManagerByIPv6(std::string ipv6);
+    void hireMemberManagerByHostname(std::string hostname);
 
 public:
     Manager();
 
     void killApplication();
 
-    void hireMemberManagerByIPv4(std::string ipv4);
-    void hireMemberManagerByIPv6(std::string ipv6);
-    void hireMemberManagerByHostname(std::string hostname);
+    void hireMemberManager(Member member);
     void fireMemberManager();
 
     void addMemberByMessage(std::string message);

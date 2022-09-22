@@ -13,6 +13,25 @@ Manager::Manager() {
     }
 }
 
+void Manager::hireMemberManager(Member member)
+{
+    try 
+    {
+        return this->hireMemberManagerByIPv4(member.ipv4);
+    } 
+    catch (ItemNotFoundException& e) 
+    {        
+        try 
+        {
+            return this->hireMemberManagerByIPv6(member.ipv6);
+        } 
+        catch (ItemNotFoundException& e) 
+        {
+            return this->hireMemberManagerByHostname(member.hostname);
+        }
+    }
+}
+
 void Manager::hireMemberManagerByIPv4(std::string ipv4)
 {
     pthread_mutex_lock(&(this->changeMembersLock));
