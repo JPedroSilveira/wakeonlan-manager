@@ -5,7 +5,7 @@ void receiveLifeMonitorPackets(State* state)
     int sockfd, n;
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
-	char buffer[MACHINE_LIFE_MONITOR_PACKAGE_SIZE];
+	char buffer[MACHINE_LIFE_MONITOR_PACKET_SIZE];
 		
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
     {
@@ -30,7 +30,7 @@ void receiveLifeMonitorPackets(State* state)
     while (true) {
         throwExceptionIfNotAlive(state);
 
-        n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKAGE_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
+        n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKET_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
         if (n < 0) 
         {
             printWarning("Fail to receive life monitor packet");

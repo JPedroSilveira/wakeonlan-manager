@@ -9,7 +9,7 @@ void sendMonitoringPackets(State* state)
     unsigned int length;
     struct sockaddr_in serv_addr, from;
     struct hostent *server;
-    char buffer[MACHINE_LIFE_MONITOR_PACKAGE_SIZE];
+    char buffer[MACHINE_LIFE_MONITOR_PACKET_SIZE];
     struct timeval tv;
     
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
@@ -51,7 +51,7 @@ void sendMonitoringPackets(State* state)
         {
             length = sizeof(struct sockaddr_in);
 
-            n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKAGE_SIZE, 0, (struct sockaddr *) &from, &length);
+            n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKET_SIZE, 0, (struct sockaddr *) &from, &length);
             if (n < 0) {
                 state->getManager()->updateToSleepingByIPv4(member.ipv4);
             } else {

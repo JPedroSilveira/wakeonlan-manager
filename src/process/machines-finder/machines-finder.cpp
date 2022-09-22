@@ -6,7 +6,7 @@ const int BROADCAST_TIMEOUT_IN_SEC = 10;
 
 void sendBroadcastPacket(State* state)
 {
-    char buffer[MACHINE_FINDER_PACKAGE_SIZE];
+    char buffer[MACHINE_FINDER_PACKET_SIZE];
     int n{0};
     socklen_t clilen;
     struct sockaddr_in cli_addr;
@@ -67,7 +67,7 @@ void sendBroadcastPacket(State* state)
     while (timeAwaiting < BROADCAST_AWAITING_TIME_IN_SEC)
     {
         /* receive from socket */
-        n = recvfrom(sockfd, buffer, MACHINE_FINDER_PACKAGE_SIZE, 0, (struct sockaddr *)&cli_addr, &clilen);
+        n = recvfrom(sockfd, buffer, MACHINE_FINDER_PACKET_SIZE, 0, (struct sockaddr *)&cli_addr, &clilen);
         if (n > 0)
         {
             memberMessages.push_back(std::string(buffer));
@@ -101,7 +101,7 @@ void MachinesFinderProcess(State* state)
             throwExceptionIfNotAlive(state);
             if (state->getSelf().isManager)
             {
-                sendBroadcastPacketMock(state);
+                sendBroadcastPacket(state);
             }
             std::this_thread::sleep_for(std::chrono::seconds(BROADCAST_SLEEP_TIME_IN_SEC));
         } 

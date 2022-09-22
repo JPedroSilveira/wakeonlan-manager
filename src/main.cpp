@@ -34,7 +34,8 @@
 #include "./process/machines-update-printer/machines-update-printer.h"
 #include "./process/machines-table-replicator/machines-table-replicator-sender.h"
 #include "./process/machines-table-replicator/machines-table-replicator-receiver.h"
-#include "./process/manager-life-monitor/manager-life-monitor.h"
+#include "./process/manager-life-monitor/manager-life-monitor-sender.h"
+#include "./process/manager-life-monitor/manager-life-monitor-listener.h"
 #include "./process/election/election-listener.h"
 
 State state = State();
@@ -66,8 +67,10 @@ int main(int argc, char *argv[])
     Process machinesTableReplicatorSenderProcess{MachinesTableReplicatorSenderProcess};
     machinesTableReplicatorSenderProcess.start(&state); 
 
-    // Process managerLifeMonitorProcess{ManagerLifeMonitorProcess};
-    // managerLifeMonitorProcess.start(&state);
+    Process managerLifeMonitorListenerProcess{ManagerLifeMonitorListenerProcess};
+    managerLifeMonitorListenerProcess.start(&state);
+    Process managerLifeMonitorSenderProcess{ManagerLifeMonitorSenderProcess};
+    managerLifeMonitorSenderProcess.start(&state);
 
     // Process electionListener{ElectionListenerProcess};
     // electionListener.start(&state);
@@ -85,7 +88,8 @@ int main(int argc, char *argv[])
         && machinesUpdatePrinterProcess.getStatus() != std::future_status::ready 
         && machinesTableReplicatorReceiverProcess.getStatus() != std::future_status::ready
         && machinesTableReplicatorSenderProcess.getStatus() != std::future_status::ready 
-        // && managerLifeMonitorProcess.getStatus() != std::future_status::ready 
+        && managerLifeMonitorListenerProcess.getStatus() != std::future_status::ready
+        && managerLifeMonitorSenderProcess.getStatus() != std::future_status::ready 
         // && electionListener.getStatus() != std::future_status::ready
     );
 

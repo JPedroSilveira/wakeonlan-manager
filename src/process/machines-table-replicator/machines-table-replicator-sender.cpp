@@ -10,7 +10,7 @@ void listenAndSendUpdates(State* state)
     unsigned int length;
     struct sockaddr_in serv_addr, from;
     struct hostent *server;
-    char buffer[MACHINE_TABLE_REPLICATOR_PACKAGE_SIZE];
+    char buffer[MACHINE_TABLE_REPLICATOR_PACKET_SIZE];
     struct timeval tv;
 
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
@@ -30,13 +30,13 @@ void listenAndSendUpdates(State* state)
     }
 
     while(true) {
+        throwExceptionIfNotAlive(state);
+
         if (!state->getSelf().isManager)
         {
             std::this_thread::sleep_for(std::chrono::seconds(IS_NOT_MANAGER_SLEEP_IN_SEC));
             continue;
         }
-
-        throwExceptionIfNotAlive(state);
 
         std::list<Member> members = state->getManager()->getMembersWhenUpdatedAndLock();
 
@@ -73,10 +73,10 @@ void listenAndSendUpdates(State* state)
             {
                 length = sizeof(struct sockaddr_in);
 
-                n = recvfrom(sockfd, buffer, MACHINE_TABLE_REPLICATOR_PACKAGE_SIZE, 0, (struct sockaddr *) &from, &length);
+                n = recvfrom(sockfd, buffer, MACHINE_TABLE_REPLICATOR_PACKET_SIZE, 0, (struct sockaddr *) &from, &length);
                 if (n < 0) 
                 {
-                    printWarning("Fail to receive machines table update packet for " + member.ipv4);
+                    printWarning("Fail to receive machines table update packet answer for " + member.ipv4);
                 }
             }
         }

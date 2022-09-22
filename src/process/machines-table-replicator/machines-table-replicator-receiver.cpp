@@ -7,7 +7,7 @@ void receiveAndSaveUpdates(State* state)
     int sockfd, n;
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
-	char buffer[MACHINE_TABLE_REPLICATOR_PACKAGE_SIZE];
+	char buffer[MACHINE_TABLE_REPLICATOR_PACKET_SIZE];
 		
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
     {
@@ -31,18 +31,19 @@ void receiveAndSaveUpdates(State* state)
     while (true) {
         throwExceptionIfNotAlive(state);
 
-        n = recvfrom(sockfd, buffer, MACHINE_TABLE_REPLICATOR_PACKAGE_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
+        n = recvfrom(sockfd, buffer, MACHINE_TABLE_REPLICATOR_PACKET_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
         if (n < 0) 
         {
-            printWarning("Fail to receive answer from machines table update packet");
+            printWarning("Fail to receive machines table update packet");
         } 
         else 
         {
             std::string answer = "Got it!";
 
             n = sendto(sockfd, answer.c_str(), answer.length(), 0,(struct sockaddr *) &cli_addr, sizeof(struct sockaddr));
-            if (n  < 0) {
-                printWarning("Fail to send confirmation message for machines table update packet");
+            if (n  < 0) 
+            {
+                printWarning("Fail to answer machines table update packet");
             }
 
             std::list<std::string> membersMessages = {};

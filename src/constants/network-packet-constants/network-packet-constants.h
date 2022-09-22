@@ -5,8 +5,9 @@
  * Define packages max size for all network packages
  **************************************************/
 
-const int MACHINE_FINDER_PACKAGE_SIZE = 512;
-const int MACHINE_LIFE_MONITOR_PACKAGE_SIZE = 512;
-const int MACHINE_TABLE_REPLICATOR_PACKAGE_SIZE = 65000;
+const int MACHINE_FINDER_PACKET_SIZE = 512;
+const int MACHINE_LIFE_MONITOR_PACKET_SIZE = 512;
+const int MACHINE_TABLE_REPLICATOR_PACKET_SIZE = 65000;
+const int MANAGER_LIFE_MONITOR_PACKET_SIZE = 256;
 
 #endif
