@@ -18,9 +18,11 @@ State::State()
     #ifdef __APPLE__
         this->updateFailToContactManagerCountSemaphore = dispatch_semaphore_create(0);
         this->electionStartedSemaphore = dispatch_semaphore_create(0);
+        this->sendNewManagerMessageSemaphore = dispatch_semaphore_create(0);
     #else
         sem_init(&(this->updateFailToContactManagerCountSemaphore), 0, 0);
         sem_init(&(this->electionStartedSemaphore), 0, 0);
+        sem_init(&(this->sendNewManagerMessageSemaphore), 0, 0);
     #endif
 
     int failure = pthread_mutex_init(&(this->changeFailToContactManagerCountLock), NULL);
@@ -210,4 +212,22 @@ void State::finishElection()
 bool State::isDoingElection()
 {
     return electionStarted;
+}
+
+void State::triggerSendNewManagerMessage()
+{
+    #ifdef __APPLE__
+        dispatch_semaphore_signal(this->sendNewManagerMessageSemaphore);
+    #else
+        sem_post(&(this->sendNewManagerMessageSemaphore));
+    #endif
+}
+
+void State::awaitForSendNewManagerMessageTrigger()
+{
+    #ifdef __APPLE__
+        dispatch_semaphore_wait(this->sendNewManagerMessageSemaphore, DISPATCH_TIME_FOREVER);
+    #else
+        sem_wait(&(this->sendNewManagerMessageSemaphore));
+    #endif
 }

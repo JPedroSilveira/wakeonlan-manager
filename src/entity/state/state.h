@@ -31,9 +31,11 @@ private:
     #ifdef __APPLE__
         dispatch_semaphore_t updateFailToContactManagerCountSemaphore;
         dispatch_semaphore_t electionStartedSemaphore;
+        dispatch_semaphore_t sendNewManagerMessageSemaphore;
     #else
         sem_t updateFailToContactManagerCountSemaphore;
         sem_t electionStartedSemaphore;
+        sem_t sendNewManagerMessageSemaphore;
     #endif
     pthread_mutex_t changeFailToContactManagerCountLock;
     pthread_mutex_t electionStartedLock;
@@ -56,6 +58,8 @@ public:
     void awaitForElectionStart();
     void finishElection();
     bool isDoingElection();
+    void triggerSendNewManagerMessage();
+    void awaitForSendNewManagerMessageTrigger();
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "machines-life-monitor.h"
 
 const int MONITORING_SLEEP_IN_SEC = 2;
-const int MONITORING_TIMEOUT_IN_SEC = 1;
+const int ELECTION_VOTE_TIMEOUT_IN_SEC = 1;
 
 void sendMonitoringPackets(State* state)
 {
@@ -17,7 +17,7 @@ void sendMonitoringPackets(State* state)
         throw FatalErrorException();
     }
 
-    tv.tv_sec = MONITORING_TIMEOUT_IN_SEC;
+    tv.tv_sec = ELECTION_VOTE_TIMEOUT_IN_SEC;
     tv.tv_usec = 0;
     ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     if (ret)
