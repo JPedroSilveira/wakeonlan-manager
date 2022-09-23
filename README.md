@@ -11,3 +11,7 @@ Create a non-centralized server inside a local network connecting multiple compu
 `make run`: execute the program
 
 `make go`: compile and execute the program
+
+`make client`: compile and execute the program as participant
+
+`make manager`: compile and execute the program as manager
