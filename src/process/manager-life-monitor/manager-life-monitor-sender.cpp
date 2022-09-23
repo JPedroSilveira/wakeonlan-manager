@@ -32,6 +32,7 @@ void sendManagerLifeMonitorPacket(State* state)
 
         std::this_thread::sleep_for(std::chrono::seconds(MONITORING_SLEEP_IN_SEC));
 
+        // TODO: Check if there is a manager in the list too
         if (state->getSelf().isManager || state->isDoingElection())
         {
             continue;

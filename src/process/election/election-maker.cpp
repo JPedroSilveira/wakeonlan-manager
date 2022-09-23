@@ -39,7 +39,7 @@ bool doElectionByPid(State* state)
 
         printDebug("Sending election packet for " + member.ipv4);
 
-	server = gethostbyname(member.ipv4.c_str());
+	    server = gethostbyname(member.ipv4.c_str());
         if (server == NULL) 
         {
             printWarning("Fail to get hostname for " + member.ipv4 + " during election, so it will be ignored");

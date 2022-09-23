@@ -30,7 +30,8 @@ bool sendNewManagerPacket(State* state)
     
     for (Member member : state->getManager()->getMembers()) 
     {
-        if (member.isEqual(self)) {
+        if (member.isEqual(self)) 
+        {
             continue;
         }
 
