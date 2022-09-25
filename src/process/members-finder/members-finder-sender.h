@@ -1,9 +1,9 @@
-#ifndef MONITOR_HEADER
-#define MONITOR_HEADER
+#ifndef MACHINES_FINDER_HEADER
+#define MACHINES_FINDER_HEADER
 
 /**************************************************
- * Constantly does requests do update connected
- * machines status.
+ * If manager: find out machines on local network
+ * sending members finder broadcast packets
  **************************************************/
 
 #include <iostream>
@@ -25,7 +25,11 @@
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
+#include "../../constants/network-port-constants/network-port-constants.h"
+#include "../../constants/network-packet-constants/network-packet-constants.h"
+#include "../../exception/fatal-error-exception/fatal-error-exception.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
-void MonitorProcess(State* state);
+void MembersFinderSenderProcess(State* state);
 
 #endif

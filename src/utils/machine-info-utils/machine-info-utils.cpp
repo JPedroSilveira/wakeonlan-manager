@@ -1,6 +1,7 @@
-#include "machine-info.h"
+#include "machine-info-utils.h"
 
 const int MAX_HOSTNAME_LENGTH = 255;
+const int MAX_MAC_ADDRESS_LENGTH = 255;
 
 #if __APPLE__
 const int MAC_ADDRESS_FAMILY = AF_LINK;
@@ -33,10 +34,12 @@ std::vector<std::string> getAddresses()
         ptr_entry != nullptr;
         ptr_entry = ptr_entry->ifa_next)
     {
-	std::string interfaceName = std::string(ptr_entry->ifa_name);
-	bool isWiredInterface = interfaceName.rfind("eth", 0) == 0;
-	if (!isWiredInterface) {
-		continue;
+        std::string interfaceName = std::string(ptr_entry->ifa_name);
+
+        // TODO[LAB]:UNCOMMENT TO RUN ONLY ON ETHERNET
+        bool isWiredInterface = interfaceName.rfind("eth", 0) == 0;
+        if (!isWiredInterface) {
+        	continue;
         }
 
         std::string ipaddress_human_readable_form;
@@ -85,13 +88,13 @@ std::vector<std::string> getAddresses()
         {
             if (ptr_entry->ifa_addr != nullptr && std::string(ptr_entry->ifa_name).size() > 0)
             {
-                char macAdress[256];
+                char macAdress[MAX_MAC_ADDRESS_LENGTH];
                 std::string command = "cat /sys/class/net/" + std::string(ptr_entry->ifa_name) + "/address";
                 FILE *fp;
                 fp = popen(command.c_str(), "r");
                 fgets(macAdress, sizeof(macAdress), fp);
                 pclose(fp);
-		mac = macAdress;
+		        mac = macAdress;
             }
         }
     }
@@ -119,6 +122,8 @@ Member getMachineInfo()
     member.mac = addresses.at(2);
 
     member.broadcast = getBroadcast(member.ipv4);
+
+    member.pid = getpid();
 
     return member;
 }

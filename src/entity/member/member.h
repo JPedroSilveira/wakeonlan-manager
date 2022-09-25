@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <algorithm>
 #include "../../utils/boolean-utils/boolean-utils.h"
-#include "../../utils/print-utils/print-utils.h"
 
 class Member
 {
@@ -29,18 +28,17 @@ public:
     std::string hostname;
     std::string broadcast;
     std::string mac;
+    int pid;
     bool isManager;
     Member();
     int getStatus();
     bool isAwake();
+    bool isEqual(Member member);
     void setMemberAsAwake();
     void setMemberAsSleeping();
-    void setIsManager(std::vector<std::string> args);
     std::string toMessage();
     void fromMessage(std::string message);
     std::string toTableLine();
 };
-
-void printMembersTable(std::list<Member> members);
 
 #endif

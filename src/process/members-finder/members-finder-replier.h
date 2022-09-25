@@ -1,11 +1,10 @@
-#ifndef DISCOVER_HEADER
-#define DISCOVER_HEADER
+#ifndef MEMBERS_FINDER_REPLIER_HEADER
+#define MEMBERS_FINDER_REPLIER_HEADER
 
 /**************************************************
- * Discover machines on the local network.
- * - Send requests to let other machines know that
- * this one is connected.
- * Do requests to find other machines.
+ * Answer machines finder broadcast packets
+ * to let manager knows that the machine 
+ * wants to be part of the members network
  **************************************************/
 
 #include <iostream>
@@ -27,7 +26,11 @@
 #include "../../utils/alive-utils/alive-utils.h"
 #include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
+#include "../../constants/network-port-constants/network-port-constants.h"
+#include "../../constants/network-packet-constants/network-packet-constants.h"
+#include "../../exception/fatal-error-exception/fatal-error-exception.h"
+#include "../../exception/not-alive/not-alive-exception.h"
 
-void DiscoverProcess(State* state);
+void MembersFinderReplierProcess(State* state);
 
 #endif

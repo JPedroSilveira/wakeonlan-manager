@@ -1,13 +1,13 @@
-#ifndef WAKER_HEADER
-#define WAKER_HEADER
+#ifndef WAKE_ON_LAN_UTILS_HEADER
+#define WAKE_ON_LAN_UTILS_HEADER
 
 /**************************************************
  * Provides methods to wake up machines using
- * wakeonlan command
+ * their MAC address
  **************************************************/
 
 #include <iostream>
 
-void wakeUp(std::string mac);
+void sendMagicPacket(std::string mac);
 
 #endif
