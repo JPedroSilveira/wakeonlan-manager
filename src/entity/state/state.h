@@ -50,12 +50,11 @@ public:
     bool isAlive();
     int failToContactManagerCountListener();
     void increaseFailToContactManagerCount();
-    void increaseFailtToContactManagerCountBy(int quantity);
     void resetFailToContactManagerCount();
     void unlockFailToContactManagerCountLock();
     void resetAndUnlockFailToContactManagerCountLock();
-    void tryStartElection();
-    void awaitForElectionStart();
+    void startElectionTrigger();
+    void awaitForStartElectionTrigger();
     void finishElection();
     bool isDoingElection();
     void triggerSendNewManagerMessage();

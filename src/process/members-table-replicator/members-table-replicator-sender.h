@@ -1,35 +1,40 @@
-#ifndef MACHINES_LIFE_MONITOR_HEADER
-#define MACHINES_LIFE_MONITOR_HEADER
+#ifndef MEMBERS_TABLE_REPLICATOR_SENDER_HEADER
+#define MEMBERS_TABLE_REPLICATOR_SENDER_HEADER
 
 /**************************************************
- * If manager: send life monitor packets 
- * to all members to check if they are awake 
- * and update the state with the results
+ * If manager: send members table update packets 
+ * with the updated members list, 
+ * allowing this information to be replicated in
+ * all members
  **************************************************/
 
+#include <thread>
 #include <iostream>
-#include <sys/types.h>
+#include <chrono>
+#include <list>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/types.h>
 #include <string.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <arpa/inet.h>
+#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
-#include <thread>
-#include <chrono>
+#include <sstream>
+#include <algorithm>
 
 #include "../../utils/alive-utils/alive-utils.h"
-#include "../../utils/print-utils/print-utils.h"
 #include "../../entity/state/state.h"
+#include "../../entity/member/member.h"
 #include "../../constants/network-port-constants/network-port-constants.h"
 #include "../../constants/network-packet-constants/network-packet-constants.h"
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesLifeMonitorProcess(State* state);
+void MembersTableReplicatorSenderProcess(State* state);
 
 #endif

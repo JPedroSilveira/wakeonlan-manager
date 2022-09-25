@@ -1,4 +1,4 @@
-#include "machines-life-monitor.h"
+#include "members-life-monitor.h"
 
 const int MONITORING_SLEEP_IN_SEC = 2;
 const int ELECTION_VOTE_TIMEOUT_IN_SEC = 1;
@@ -13,7 +13,7 @@ void sendMonitoringPackets(State* state)
     struct timeval tv;
     
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-        printFatalError("Fail to open socket to send life monitor packet");
+        printFatalError("Fail to open socket to send members life monitor packet");
         throw FatalErrorException();
     }
 
@@ -22,7 +22,7 @@ void sendMonitoringPackets(State* state)
     ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     if (ret)
     {
-        printFatalError("Fail to set socket timeout to send life monitor packet");
+        printFatalError("Fail to set socket timeout to send members life monitor packet");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -37,7 +37,7 @@ void sendMonitoringPackets(State* state)
             {
                 server = gethostbyname(member.ipv4.c_str());
                 if (server == NULL) {
-                    printWarning("Fail to find host for " + member.ipv4 + " while sending life monitor packet");
+                    printWarning("Fail to find host for " + member.ipv4 + " while sending members life monitor packet");
                     continue;
                 }	
                     
@@ -51,7 +51,7 @@ void sendMonitoringPackets(State* state)
                 n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
                 if (n < 0) 
                 {
-                    printWarning("Fail to send life monitor packet for " + member.ipv4);
+                    printWarning("Fail to send members life monitor packet for " + member.ipv4);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ void sendMonitoringPacketsMock(State* state)
     }
 }
 
-void MachinesLifeMonitorProcess(State* state)
+void MembersLifeMonitorProcess(State* state)
 {
     try 
     {

@@ -1,4 +1,4 @@
-#include "machines-table-replicator-receiver.h"
+#include "members-table-replicator-receiver.h"
 
 const std::string LIST_SEPARATOR = ";";
 
@@ -11,7 +11,7 @@ void receiveAndSaveUpdates(State* state)
 		
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
     {
-        printFatalError("Fail to open socket to receive machines table update packets");
+        printFatalError("Fail to open socket to receive members table update packets");
         throw FatalErrorException();    
     }
 
@@ -21,7 +21,7 @@ void receiveAndSaveUpdates(State* state)
 	bzero(&(serv_addr.sin_zero), 8);    
 	 
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(struct sockaddr)) < 0) {
-        printFatalError("Fail to bind socket to receive machines table update packets");
+        printFatalError("Fail to bind socket to receive members table update packets");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -34,7 +34,7 @@ void receiveAndSaveUpdates(State* state)
         n = recvfrom(sockfd, buffer, MACHINE_TABLE_REPLICATOR_PACKET_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
         if (n < 0) 
         {
-            printWarning("Fail to receive machines table update packet");
+            printWarning("Fail to receive members table update packet");
         } 
         else 
         {
@@ -43,7 +43,7 @@ void receiveAndSaveUpdates(State* state)
             n = sendto(sockfd, answer.c_str(), answer.length(), 0,(struct sockaddr *) &cli_addr, sizeof(struct sockaddr));
             if (n  < 0) 
             {
-                printWarning("Fail to answer machines table update packet");
+                printWarning("Fail to answer members table update packet");
             }
 
             std::list<std::string> membersMessages = {};
@@ -72,7 +72,7 @@ void receiveAndSaveUpdates(State* state)
     }
 }
 
-void MachinesTableReplicatorReceiverProcess(State* state)
+void MembersTableReplicatorReceiverProcess(State* state)
 {
     try 
     {

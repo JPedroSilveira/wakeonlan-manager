@@ -10,7 +10,7 @@ void listenAndTriggerElectionIfNecessary(State* state)
 
         if (failToContactManagerCount >= FAIL_TO_CONTACT_MANAGER_COUNT_THRESHOLD) 
         {
-            state->tryStartElection();
+            state->awaitForStartElectionTrigger();
         }
         
         state->unlockFailToContactManagerCountLock();

@@ -1,10 +1,10 @@
-#ifndef MACHINES_FINDER_REPLIER_HEADER
-#define MACHINES_FINDER_REPLIER_HEADER
+#ifndef MEMBERS_LIFE_MONITOR_HEADER
+#define MEMBERS_LIFE_MONITOR_HEADER
 
 /**************************************************
- * Answer machines finder broadcast packets
- * to let manager knows that the machine 
- * wants to be part of the members network
+ * If manager: send members life monitor packets 
+ * to all members to check if they are awake 
+ * and update the state with the results
  **************************************************/
 
 #include <iostream>
@@ -17,7 +17,6 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
 #include <thread>
@@ -31,6 +30,6 @@
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesFinderReplierProcess(State* state);
+void MembersLifeMonitorProcess(State* state);
 
 #endif

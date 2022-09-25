@@ -1,5 +1,5 @@
-#ifndef MACHINES_UPDATE_PRINTER_HEADER
-#define MACHINES_UPDATE_PRINTER_HEADER
+#ifndef MEMBERS_UPDATE_PRINTER_HEADER
+#define MEMBERS_UPDATE_PRINTER_HEADER
 
 /**************************************************
  * Monitor members table in application 
@@ -15,6 +15,6 @@
 #include "../../entity/member/member.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesUpdatePrinter(State* state);
+void MembersUpdatePrinter(State* state);
 
 #endif

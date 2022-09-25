@@ -1,4 +1,4 @@
-#include "machines-table-replicator-sender.h"
+#include "members-table-replicator-sender.h"
 
 const int SEND_UPDATES_DELAY_IN_SEC = 5;
 const int SOCKET_TIMEOUT_IN_SEC = 1;
@@ -15,7 +15,7 @@ void sendUpdatesConstantly(State* state)
 
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
     {
-        printFatalError("Fail to open socket to send machines table update packet");
+        printFatalError("Fail to open socket to send members table update packet");
         throw FatalErrorException();        
     }
 
@@ -24,7 +24,7 @@ void sendUpdatesConstantly(State* state)
     ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     if (ret)
     {
-        printFatalError("Fail to set socket timeout to send machines table update packet");
+        printFatalError("Fail to set socket timeout to send members table update packet");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -56,7 +56,7 @@ void sendUpdatesConstantly(State* state)
 
             server = gethostbyname(member.ipv4.c_str());
             if (server == NULL) {
-                printWarning("Fail to find host for " + member.ipv4 + " while sending machines table update packet");
+                printWarning("Fail to find host for " + member.ipv4 + " while sending members table update packet");
                 continue;
             }	
                 
@@ -68,7 +68,7 @@ void sendUpdatesConstantly(State* state)
             n = sendto(sockfd, message.c_str(), message.length(), 0, (const struct sockaddr *) &serv_addr, sizeof(struct sockaddr_in));
             if (n < 0) 
             {
-                printWarning("Fail to send machines table update packet for " + member.ipv4);
+                printWarning("Fail to send members table update packet for " + member.ipv4);
             }
             else
             {
@@ -77,14 +77,14 @@ void sendUpdatesConstantly(State* state)
                 n = recvfrom(sockfd, buffer, MACHINE_TABLE_REPLICATOR_PACKET_SIZE, 0, (struct sockaddr *) &from, &length);
                 if (n < 0) 
                 {
-                    printWarning("Fail to receive machines table update packet answer for " + member.ipv4);
+                    printWarning("Fail to receive members table update packet answer for " + member.ipv4);
                 }
             }
         }
     }  
 }
 
-void MachinesTableReplicatorSenderProcess(State* state)
+void MembersTableReplicatorSenderProcess(State* state)
 {
     try 
     {

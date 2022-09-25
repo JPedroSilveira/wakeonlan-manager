@@ -1,9 +1,9 @@
-#ifndef MACHINES_FINDER_HEADER
-#define MACHINES_FINDER_HEADER
+#ifndef MEMBERS_LIFE_MONITOR_REPLIER_HEADER
+#define MEMBERS_LIFE_MONITOR_REPLIER_HEADER
 
 /**************************************************
- * If manager: find out machines on local network
- * sending machines finder broadcast packets
+ * Receives members life monitor packets packets 
+ * and answer them
  **************************************************/
 
 #include <iostream>
@@ -16,7 +16,6 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
 #include <thread>
@@ -30,6 +29,6 @@
 #include "../../exception/fatal-error-exception/fatal-error-exception.h"
 #include "../../exception/not-alive/not-alive-exception.h"
 
-void MachinesFinderProcess(State* state);
+void MembersLifeMonitorReplierProcess(State* state);
 
 #endif

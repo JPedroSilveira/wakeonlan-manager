@@ -103,7 +103,7 @@ void ElectionMakerProcess(State* state)
     try
     {
         while(true) {
-            state->awaitForElectionStart();
+            state->awaitForStartElectionTrigger();
             while(state->isDoingElection()) {
                 printDebug("Election attempt started");
                 state->getManager()->fireMemberManager();

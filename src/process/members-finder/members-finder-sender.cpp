@@ -1,4 +1,4 @@
-#include "machines-finder.h"
+#include "members-finder-sender.h"
 
 const int BROADCAST_AWAITING_TIME_IN_SEC = 10;
 const int BROADCAST_SLEEP_TIME_IN_SEC = 2;
@@ -15,7 +15,7 @@ void sendBroadcastPacket(State* state)
     int sockfd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sockfd <= 0)
     {
-        printFatalError("Fail to open socket to send machines finder packet");
+        printFatalError("Fail to open socket to send members finder packet");
         throw FatalErrorException();
     }
 
@@ -24,7 +24,7 @@ void sendBroadcastPacket(State* state)
     int ret = setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
     if (ret)
     {
-        printFatalError("Fail to set socket broadcast to send machines finder packet");
+        printFatalError("Fail to set socket broadcast to send members finder packet");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -36,7 +36,7 @@ void sendBroadcastPacket(State* state)
     ret = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     if (ret)
     {
-        printFatalError("Fail to set socket timeout to send machines finder packet");
+        printFatalError("Fail to set socket timeout to send members finder packet");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -55,7 +55,7 @@ void sendBroadcastPacket(State* state)
     ret = sendto(sockfd, message.c_str(), message.length(), 0, (struct sockaddr *)&broadcastAddr, sizeof broadcastAddr);
     if (ret < 0)
     {
-        printFatalError("Fail to send machines finder broadcast packet");
+        printFatalError("Fail to send members finder broadcast packet");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -93,7 +93,7 @@ void sendBroadcastPacketMock(State* state)
     state->getManager()->addMembersByMessages(memberMessages);
 }
 
-void MachinesFinderProcess(State* state)
+void MembersFinderSenderProcess(State* state)
 {
     try 
     {

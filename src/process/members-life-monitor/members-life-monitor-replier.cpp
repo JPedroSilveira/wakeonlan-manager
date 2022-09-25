@@ -1,4 +1,4 @@
-#include "machines-life-monitor-replier.h"
+#include "members-life-monitor-replier.h"
 
 void receiveLifeMonitorPackets(State* state)
 {
@@ -9,7 +9,7 @@ void receiveLifeMonitorPackets(State* state)
 		
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) 
     {
-        printFatalError("Fail to open socket to receive life monitor packets");
+        printFatalError("Fail to open socket to receive members life monitor packets");
         throw FatalErrorException();
     }
 
@@ -20,7 +20,7 @@ void receiveLifeMonitorPackets(State* state)
 	 
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(struct sockaddr)) < 0) 
     {
-        printFatalError("Fail to bind socket to receive life monitor packets");
+        printFatalError("Fail to bind socket to receive members life monitor packets");
         close(sockfd);
         throw FatalErrorException();
     }
@@ -33,7 +33,7 @@ void receiveLifeMonitorPackets(State* state)
         n = recvfrom(sockfd, buffer, MACHINE_LIFE_MONITOR_PACKET_SIZE, 0, (struct sockaddr *) &cli_addr, &clilen);
         if (n < 0) 
         {
-            printWarning("Fail to receive life monitor packet");
+            printWarning("Fail to receive members life monitor packet");
         } 
         else 
         {                    
@@ -41,13 +41,13 @@ void receiveLifeMonitorPackets(State* state)
   
             n = sendto(sockfd, message.c_str(), message.length(), 0,(struct sockaddr *) &cli_addr, sizeof(struct sockaddr));
             if (n  < 0) {
-                printWarning("Fail to answer life monitor packet");
+                printWarning("Fail to answer members life monitor packet");
             }      
         }
     }
 }
 
-void MachinesLifeMonitorReplierProcess(State* state)
+void MembersLifeMonitorReplierProcess(State* state)
 {
     try 
     {

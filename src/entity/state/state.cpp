@@ -142,14 +142,6 @@ void State::increaseFailToContactManagerCount()
     pthread_mutex_unlock(&(this->changeFailToContactManagerCountLock));
 }
 
-void State::increaseFailtToContactManagerCountBy(int quantity)
-{
-    pthread_mutex_lock(&(this->changeFailToContactManagerCountLock));
-    this->failToContactManagerCount = this->failToContactManagerCount + quantity;
-    this->postFailToContactManagerCountUpdate();
-    pthread_mutex_unlock(&(this->changeFailToContactManagerCountLock));
-}
-
 void State::resetFailToContactManagerCount()
 {
     pthread_mutex_lock(&(this->changeFailToContactManagerCountLock));
@@ -178,7 +170,7 @@ void State::postFailToContactManagerCountUpdate()
     #endif
 }
 
-void State::tryStartElection()
+void State::startElectionTrigger()
 {
     pthread_mutex_lock(&(this->electionStartedLock));
     if (!this->electionStarted) {
@@ -193,7 +185,7 @@ void State::tryStartElection()
     pthread_mutex_unlock(&(this->electionStartedLock));
 }
 
-void State::awaitForElectionStart()
+void State::awaitForStartElectionTrigger()
 {
     #ifdef __APPLE__
         dispatch_semaphore_wait(this->electionStartedSemaphore, DISPATCH_TIME_FOREVER);

@@ -36,7 +36,7 @@ std::vector<std::string> getAddresses()
     {
         std::string interfaceName = std::string(ptr_entry->ifa_name);
 
-        // TODO[LAB]: REMOVE TO RUN ON LABS
+        // TODO[LAB]:UNCOMMENT TO RUN ONLY ON ETHERNET
         bool isWiredInterface = interfaceName.rfind("eth", 0) == 0;
         if (!isWiredInterface) {
         	continue;
